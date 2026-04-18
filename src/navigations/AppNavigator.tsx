@@ -10,6 +10,7 @@ import SelectBoard from "../Screens/SelectBoard";
 import Dashboard from "../Screens/Dashboard";
 import ProgressScreen from "../Screens/ProgressScreen";
 import ChatScreen from "../Screens/ChatScreen";
+import SyllabusList from "../Screens/SyllabusList";
 
 
 
@@ -23,6 +24,7 @@ export type RootStackParamList = {
     Dashboard: undefined;
     ProgressScreen: undefined;
     ChatScreen: undefined;
+    SyllabusList: { subjectTitle?: string };
 };
 
 
@@ -41,7 +43,7 @@ const AppNavigator = () => {
                 <Stack.Screen name="Dashboard" component={Dashboard} />
                 <Stack.Screen name="ProgressScreen" component={ProgressScreen} />
                 <Stack.Screen name="ChatScreen" component={ChatScreen} />
-
+                <Stack.Screen name="SyllabusList" component={SyllabusList} />
             </Stack.Navigator>
         </NavigationContainer>
     );

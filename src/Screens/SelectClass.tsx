@@ -22,7 +22,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SelectClass'>;
 
 const SelectClass = ({ navigation }: Props) => {
     const { language, labels } = useLanguage();
-    const [selectedClass, setSelectedClass] = useState<number | null>(9);
+    const [selectedClass, setSelectedClass] = useState<number | null>(null);
 
     const classes = Array.from({ length: 12 }, (_, i) => i + 1);
 
