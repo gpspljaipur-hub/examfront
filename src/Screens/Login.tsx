@@ -45,7 +45,7 @@ const Login = ({ navigation }: any) => {
                         style={styles.headerLogo}
                     />
 
-                    <Text style={styles.welcomeTitle}>{labels.WelcomeTo} <Text style={{ color: Colors.background }}>EduAI</Text></Text>
+                    <Text style={styles.welcomeTitle}>{labels.WelcomeTo} <Text style={{ color: Colors.background }}>EduAIbn bnv</Text></Text>
                     <Text style={styles.subtitle}>{labels.LetsGetLearning}</Text>
 
                     <View style={styles.inputCard}>
