@@ -35,6 +35,7 @@ const SelectLanguage = ({ navigation }: Props) => {
     const handleComplete = () => {
         navigation.navigate('SelectBoard');
     };
+
     return (
         <ScreenWrapper style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={Colors.backgroundColor} />

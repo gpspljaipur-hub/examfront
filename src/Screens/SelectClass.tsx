@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     Text,
@@ -17,15 +17,35 @@ import fonts from '../comman/fonts';
 import ScreenWrapper from '../comman/ScreenWrapper';
 
 import { useLanguage } from '../context/LanguageContext';
+import { Post_Api } from '../userApi/Request';
+import ApiUrl from '../userApi/ApiUrl';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SelectClass'>;
 
-const SelectClass = ({ navigation }: Props) => {
+const SelectClass = ({ navigation, route }: Props) => {
+    const { boardId } = route.params;
+    console.log(boardId, "boardIdboardId");
+
     const { language, labels } = useLanguage();
     const [selectedClass, setSelectedClass] = useState<number | null>(null);
 
+
     const classes = Array.from({ length: 12 }, (_, i) => i + 1);
 
+    const getClass = async () => {
+        try {
+            const res = await Post_Api(ApiUrl.GET_CLASSES, {
+                boardId: boardId,
+            });
+            console.log('Classes API RESPONSE:', res?.data);
+
+        } catch (error) {
+
+        }
+    }
+    useEffect(() => {
+        getClass()
+    }, [boardId])
     const handleContinue = () => {
         navigation.navigate('Dashboard');
     };
