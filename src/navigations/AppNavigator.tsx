@@ -11,9 +11,8 @@ import Dashboard from "../Screens/Dashboard";
 import ProgressScreen from "../Screens/ProgressScreen";
 import ChatScreen from "../Screens/ChatScreen";
 import SyllabusList from "../Screens/SyllabusList";
-
-
-
+import Profile from "../Screens/Profile";
+import Question from "../Screens/Question";
 export type RootStackParamList = {
     SplashScreen: undefined;
     Login: undefined;
@@ -25,6 +24,8 @@ export type RootStackParamList = {
     ProgressScreen: undefined;
     ChatScreen: undefined;
     SyllabusList: { subjectTitle?: string };
+    Profile: undefined;
+    Question: { chapterId: string; chapterTitle: string };
 };
 
 
@@ -44,6 +45,8 @@ const AppNavigator = () => {
                 <Stack.Screen name="ProgressScreen" component={ProgressScreen} />
                 <Stack.Screen name="ChatScreen" component={ChatScreen} />
                 <Stack.Screen name="SyllabusList" component={SyllabusList} />
+                <Stack.Screen name="Profile" component={Profile} />
+                <Stack.Screen name="Question" component={Question} />
             </Stack.Navigator>
         </NavigationContainer>
     );

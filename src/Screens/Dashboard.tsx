@@ -82,12 +82,12 @@ const Dashboard = ({ navigation }: Props) => {
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.userInfo}>
-                    <View style={styles.avatarContainer}>
+                    <TouchableOpacity style={styles.avatarContainer} onPress={() => navigation.navigate('Profile')}>
                         <Image
                             source={require('../assets/images/ai_tutor_character.png')}
                             style={styles.avatarImage}
                         />
-                    </View>
+                    </TouchableOpacity>
                     <Text style={styles.headerTitle}>{labels.HeaderTitle}</Text>
                 </View>
                 <TouchableOpacity style={styles.notificationButton}>
