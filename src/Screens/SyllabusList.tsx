@@ -61,7 +61,13 @@ const SyllabusList = ({ navigation, route }: Props) => {
     ];
 
     const renderChapter = ({ item }: { item: any }) => (
-        <TouchableOpacity style={styles.chapterCard}>
+        <TouchableOpacity
+            style={styles.chapterCard}
+            onPress={() => navigation.navigate('Question', {
+                chapterId: item.id,
+                chapterTitle: item.title
+            })}
+        >
             <View style={styles.chapterInfo}>
                 <Text style={styles.chapterTitle}>{item.title}</Text>
             </View>
