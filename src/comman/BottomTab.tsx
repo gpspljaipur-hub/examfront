@@ -17,7 +17,7 @@ const BottomTab = ({ activeTab }: BottomTabProps) => {
     const tabs = [
         { id: 'Home', label: labels.Home, icon: '🏠', screen: 'Dashboard' },
         { id: 'Study', label: labels.Study, icon: '📚', screen: 'NoScreen' },
-        { id: 'AITutor', label: labels.AITutor, icon: '🤖', screen: 'ChatScreen' },
+        { id: 'AITutor', label: labels.AITutor, icon: '🤖', screen: 'AiTutor' },
         { id: 'Progress', label: labels.Progress, icon: '📊', screen: 'ProgressScreen' },
     ];
 
