@@ -126,7 +126,7 @@ const Dashboard = ({ navigation, route }: Props) => {
     ];
 
     const handleChat = () => {
-        navigation.navigate('ChatScreen');
+        navigation.navigate('AiTutor');
     };
     return (
         <ScreenWrapper style={styles.container}>

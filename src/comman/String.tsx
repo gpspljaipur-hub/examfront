@@ -137,6 +137,21 @@ const Strings = {
 		ViewFullLeaderboard: 'View Full Leaderboard',
 		You: 'You',
 		RisingStar: 'Rising Star',
+
+		// Profile Screen
+		EditProfile: 'Edit Profile',
+		ChangeProfilePicture: 'Change Profile Picture',
+		FullName: 'Full Name',
+		FullNamePlaceholder: 'Enter your full name',
+		EmailAddress: 'Email Address',
+		ProfileEmailPlaceholder: 'Enter your email',
+		MobileNumberLabel: 'Mobile Number',
+		MobilePlaceholder: 'Enter your mobile number',
+		CurrentClass: 'Current Class',
+		EducationalBoard: 'Educational Board',
+		LanguagePreference: 'Language Preference',
+		ProfilePrivacyNote: 'Your profile information is used to personalize your learning journey and AI Tutor responses. We never share your contact details.',
+		SaveChanges: 'Save Changes',
 	},
 	hi: {
 		AppName: 'एग्जामबुक',
@@ -276,6 +291,21 @@ const Strings = {
 		ViewFullLeaderboard: 'पूरा लीडरबोर्ड देखें',
 		You: 'आप',
 		RisingStar: 'उभरता सितारा',
+
+		// Profile Screen
+		EditProfile: 'प्रोफ़ाइल संपादित करें',
+		ChangeProfilePicture: 'प्रोफ़ाइल चित्र बदलें',
+		FullName: 'पूरा नाम',
+		FullNamePlaceholder: 'अपना पूरा नाम दर्ज करें',
+		EmailAddress: 'ईमेल पता',
+		ProfileEmailPlaceholder: 'अपना ईमेल दर्ज करें',
+		MobileNumberLabel: 'मोबाइल नंबर',
+		MobilePlaceholder: 'अपना मोबाइल नंबर दर्ज करें',
+		CurrentClass: 'वर्तमान कक्षा',
+		EducationalBoard: 'शैक्षिक बोर्ड',
+		LanguagePreference: 'भाषा प्राथमिकता',
+		ProfilePrivacyNote: 'आपकी प्रोफ़ाइल जानकारी का उपयोग आपकी सीखने की यात्रा और एआई ट्यूटर प्रतिक्रियाओं को व्यक्तिगत बनाने के लिए किया जाता है। हम आपके संपर्क विवरण कभी साझा नहीं करते हैं।',
+		SaveChanges: 'बदलाव सहेजें',
 	}
 };
 

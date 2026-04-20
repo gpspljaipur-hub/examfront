@@ -83,7 +83,24 @@ const Question = ({ navigation, route }: Props) => {
     };
 
     const handleSubmit = () => {
-        navigation.navigate('Dashboard');
+        const results = questionData.reduce((acc, q) => {
+            const userAnswer = answers[q.id];
+            if (userAnswer) {
+                userAnswer === q.correctAnswer ? acc.correct++ : acc.incorrect++;
+            }
+            return acc;
+        }, { correct: 0, incorrect: 0 });
+
+        const score = Math.round((results.correct / questionData.length) * 100) || 0;
+        const timeTaken = 2700 - timeLeft;
+
+        navigation.navigate('Result', { 
+            ...route.params,
+            score,
+            correctAnswers: results.correct,
+            incorrectAnswers: results.incorrect,
+            timeTaken: `${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s`
+        });
     };
 
     const getProgress = () => {
