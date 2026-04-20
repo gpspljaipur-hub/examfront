@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     Text,
@@ -18,36 +18,42 @@ import ScreenWrapper from '../comman/ScreenWrapper';
 import Toast from 'react-native-toast-message';
 
 import { useLanguage } from '../context/LanguageContext';
+import { Get_Api, GET_API_PUBLIC } from '../userApi/Request';
+import ApiUrl from '../userApi/ApiUrl';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SelectBoard'>;
 
 const SelectBoard = ({ navigation }: Props) => {
-    const { labels } = useLanguage();
-    const [selectedBoard, setSelectedBoard] = useState<string | null>('CBSE');
+    const { labels, language } = useLanguage();
+    const [selectedBoard, setSelectedBoard] = useState<string | null>('');
+    const [boards, setBoards] = useState<any[]>([]);
 
-    const boards = [
-        {
-            id: 'CBSE',
-            title: labels.CBSETitle,
-            description: labels.CBSEDesc,
-            icon: '🎓',
-        },
-        {
-            id: 'ICSE',
-            title: labels.ICSETitle,
-            description: labels.ICSEDesc,
-            icon: '📚',
-        },
-        {
-            id: 'RBSE',
-            title: labels.RBSETitle,
-            description: labels.RBSEDesc,
-            icon: '🏛️',
-        },
-    ];
+    const board = async () => {
+        try {
+            const res = await GET_API_PUBLIC(ApiUrl.GET_BOARDS);
+            console.log('Boards API RESPONSE:', res?.data);
+            setBoards(res?.data || []);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
+        board()
+    }, [])
 
     const handleContinue = () => {
-        navigation.navigate('SelectClass');
+        if (!selectedBoard) {
+            Toast.show({
+                type: 'error',
+                text1: 'Please select a board',
+                text2: 'You must choose a board to continue',
+            });
+            return;
+        }
+
+        navigation.navigate('SelectClass', {
+            boardId: selectedBoard,
+        });
     };
 
     return (
@@ -87,35 +93,35 @@ const SelectBoard = ({ navigation }: Props) => {
 
                 {boards.map((board) => (
                     <TouchableOpacity
-                        key={board.id}
+                        key={board._id}
                         style={[
                             styles.boardCard,
-                            selectedBoard === board.id && styles.selectedBoardCard
+                            selectedBoard === board._id && styles.selectedBoardCard
                         ]}
-                        onPress={() => setSelectedBoard(board.id)}
+                        onPress={() => setSelectedBoard(board._id)}
                         activeOpacity={0.8}
                     >
                         <View style={styles.cardTop}>
-                            <View style={styles.iconContainer}>
+                            {/* <View style={styles.iconContainer}>
                                 <Text style={styles.iconEmoji}>{board.icon}</Text>
-                            </View>
-                            {selectedBoard === board.id && (
+                            </View> */}
+                            {selectedBoard === board._id && (
                                 <View style={styles.checkCircle}>
                                     <Text style={styles.checkText}>✓</Text>
                                 </View>
                             )}
                         </View>
-                        <Text style={styles.boardTitle}>{board.title}</Text>
+                        <Text style={styles.boardTitle}>{board.name}</Text>
                         <Text style={styles.boardDescription}>{board.description}</Text>
 
                         <View style={styles.cardFooter}>
                             <Text style={[
                                 styles.selectLabel,
-                                selectedBoard === board.id && styles.selectedLabelText
+                                selectedBoard === board._id && styles.selectedLabelText
                             ]}>
                                 {selectedBoard === board.id ? labels.Selected : labels.SelectBoard}
                             </Text>
-                            {selectedBoard !== board.id && (
+                            {selectedBoard !== board._id && (
                                 <Text style={styles.arrowRight}>→</Text>
                             )}
                         </View>
@@ -156,8 +162,12 @@ const SelectBoard = ({ navigation }: Props) => {
                     <Text style={styles.skipText}>{labels.SkipForNow}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={styles.continueButton}
+                    style={[
+                        styles.continueButton,
+                        !selectedBoard && { opacity: 0.5 }
+                    ]}
                     onPress={handleContinue}
+                    disabled={!selectedBoard}
                 >
                     <Text style={styles.continueText}>{labels.Continue}</Text>
                 </TouchableOpacity>

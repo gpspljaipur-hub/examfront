@@ -23,10 +23,12 @@ import Toast from 'react-native-toast-message';
 type Props = NativeStackScreenProps<RootStackParamList, 'OTPScreen'>;
 
 import { useLanguage } from '../context/LanguageContext';
+import { Post_Api } from '../userApi/Request';
+import ApiUrl from '../userApi/ApiUrl';
 
-const OTPScreen = ({ navigation, route }: Props) => {
+const OTPScreen = ({ navigation, route }: any) => {
     const { labels, language } = useLanguage();
-    const { mobile } = route.params;
+    const { mobile, otpValue } = route.params;
     const [otp, setOtp] = useState(['', '', '', '']);
     const [timer, setTimer] = useState(30);
     const [canResend, setCanResend] = useState(false);
@@ -37,6 +39,12 @@ const OTPScreen = ({ navigation, route }: Props) => {
             inputRefs.current[0]?.focus();
         }, 500);
     }, []);
+
+    useEffect(() => {
+        if (otpValue) {
+            setOtp(otpValue.toString().split(''));
+        }
+    }, [otpValue]);
 
     useEffect(() => {
         let interval: any;
@@ -83,20 +91,57 @@ const OTPScreen = ({ navigation, route }: Props) => {
         }
     };
 
-    const handleVerify = () => {
+    const handleVerify = async () => {
         const otpCode = otp.join('');
+
         if (otpCode.length < 4) {
             Toast.show({
                 type: 'error',
                 text1: labels.InvalidOTP,
-                text2: labels.PleaseEnter4Digit
+                text2: labels.PleaseEnter4Digit,
             });
             return;
         }
-        Keyboard.dismiss();
-        setTimeout(() => {
-            navigation.navigate('SelectLanguage');
-        }, 10);
+
+        if (otpValue && otpCode !== otpValue.toString()) {
+            Toast.show({
+                type: 'error',
+                text1: 'Invalid OTP',
+                text2: 'OTP does not match',
+            });
+            return;
+        }
+
+        try {
+            Keyboard.dismiss();
+
+            const res = await Post_Api(ApiUrl.VERIFY_OTP, {
+                phone: mobile,
+                otp: otpCode,
+            });
+
+            console.log("VERIFY RESPONSE:", res?.data?.user?.isVerified);
+
+            if (res?.data?.user?.isVerified == true) {
+                Toast.show({
+                    type: 'success',
+                    text1: res?.data?.message || 'OTP Verified',
+                });
+
+                navigation.navigate('SelectLanguage');
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: res?.data?.message || 'Invalid OTP',
+                });
+            }
+
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: error?.response?.data?.message || 'Verification failed',
+            });
+        }
     };
 
     return (

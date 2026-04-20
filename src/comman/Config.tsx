@@ -1,17 +1,13 @@
 const Config = {
- baseurl: 'https://demo1.growthgrids.com/api/user/',
- CC_AvenueUrl: 'https://demo1.growthgrids.com/',
- ImageSliderUrl: 'https://api.growthgrids.com/storepedia/uploads/slider/',
- CategoryImageUrl: 'https://api.growthgrids.com/storepedia/uploads/category/',
- ProductImageUrl: 'https://api.growthgrids.com/storepedia/uploads/products/',
- ReviewsImageUrl: 'https://demo1.growthgrids.com/uploads/reviews/',
- GiftImageUrl: 'https://api.growthgrids.com/storepedia/uploads/home_gift/',
- colorImageUrl: 'https://api.growthgrids.com/storepedia/uploads/color_image/',
- homeGridImageUrl: 'https://api.growthgrids.com/storepedia/uploads/home_grid/',
- POST: 'POST',
- GET: 'GET',
- TOKEN: 'TOKEN',
- USER_DATA: 'USER_DATA'
+    // baseurl: 'https://sanskar.geotree.xyz/',
+    // imageurl: 'https://sanskar.geotree.xyz',
+    baseurl: 'http://10.0.2.2:3000',
+    imageurl: 'http://10.0.2.2:3000/',
+    POST: 'POST',
+    GET: 'GET',
+    TOKEN: 'TOKEN',
+    USER_DATA: 'USER_DATA'
 }
 
-export default Config
+export default Config;
+

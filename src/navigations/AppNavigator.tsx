@@ -19,7 +19,7 @@ export type RootStackParamList = {
     Login: undefined;
     OTPScreen: { mobile: string };
     SelectLanguage: undefined;
-    SelectClass: undefined;
+    SelectClass: { boardId: string };
     SelectBoard: undefined;
     Dashboard: undefined;
     ProgressScreen: undefined;

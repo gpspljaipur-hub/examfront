@@ -16,24 +16,55 @@ import HWSize from '../comman/HWSize';
 import MarginHW from '../comman/MarginHW';
 import fonts from '../comman/fonts';
 import Toast from 'react-native-toast-message';
-
+import { Post_Api } from '../userApi/Request';
+import ApiUrl from '../userApi/ApiUrl';
 import { useLanguage } from '../context/LanguageContext';
 
 const Login = ({ navigation }: any) => {
     const { labels, language } = useLanguage();
     const [mobile, setMobile] = useState('');
-
-    const handleGetOTP = () => {
-        if (mobile.length === 10) {
-            navigation.navigate('OTPScreen', { mobile });
-        } else {
+    const handleGetOTP = async () => {
+        if (mobile.length !== 10) {
             Toast.show({
                 type: 'error',
                 text1: labels.InvalidNumber,
-                text2: labels.EnterValid10Digit
+                text2: labels.EnterValid10Digit,
+            });
+            return;
+        }
+
+        try {
+            const res = await Post_Api(ApiUrl.CheckNumber, {
+                phone: mobile,
+            });
+
+            console.log('OTP API RESPONSE:', res?.data?.otp);
+
+            if (res?.data?.message || res?.data?.success) {
+                Toast.show({
+                    type: 'success',
+                    text1: 'OTP Sent',
+                });
+
+                navigation.navigate('OTPScreen', {
+                    mobile,
+                    otpValue: res?.data?.otp,
+                });
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: res?.data?.message || 'Something went wrong',
+                });
+            }
+        }
+        catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: 'API Error',
             });
         }
     };
+
 
     return (
         <SafeAreaView style={styles.safeArea}>
