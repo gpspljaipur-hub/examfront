@@ -28,26 +28,27 @@ const SelectClass = ({ navigation, route }: Props) => {
 
     const { language, labels } = useLanguage();
     const [selectedClass, setSelectedClass] = useState<number | null>(null);
-
-
-    const classes = Array.from({ length: 12 }, (_, i) => i + 1);
+    const [classes, setClasses] = useState<any[]>([]);
 
     const getClass = async () => {
         try {
             const res = await Post_Api(ApiUrl.GET_CLASSES, {
                 boardId: boardId,
             });
-            console.log('Classes API RESPONSE:', res?.data);
+            setClasses(res?.data || []);
 
         } catch (error) {
-
+            console.log(error);
         }
     }
     useEffect(() => {
         getClass()
     }, [boardId])
     const handleContinue = () => {
-        navigation.navigate('Dashboard');
+        navigation.navigate('Dashboard', {
+            boardId: boardId,
+            classId: selectedClass
+        });
     };
 
     return (
@@ -97,19 +98,26 @@ const SelectClass = ({ navigation, route }: Props) => {
                 </View>
 
                 <View style={styles.gridContainer}>
-                    {classes.map((item) => (
+                    {Array?.isArray(classes) && classes.map((item) => (
                         <TouchableOpacity
-                            key={item}
+                            key={item._id}
                             style={[
                                 styles.classCard,
-                                selectedClass === item && styles.selectedClassCard
+                                selectedClass === item._id && styles.selectedClassCard
                             ]}
-                            onPress={() => setSelectedClass(item)}
+                            onPress={() => setSelectedClass(item._id)}
                             activeOpacity={0.8}
                         >
-                            <Text style={[styles.classNumber, selectedClass === item && styles.selectedText]}>{item}</Text>
-                            <Text style={[styles.classLabel, selectedClass === item && styles.selectedText]}>{labels.ClassLabel}</Text>
-                            {selectedClass === item && (
+                            <Text
+                                style={[
+                                    styles.classNumber,
+                                    selectedClass === item._id && styles.selectedText
+                                ]}
+                            >
+                                {item.name}
+                            </Text>
+
+                            {selectedClass === item._id && (
                                 <View style={styles.checkmarkContainer}>
                                     <Text style={styles.checkmark}>✓</Text>
                                 </View>
