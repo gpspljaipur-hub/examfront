@@ -24,14 +24,13 @@ import ApiUrl from '../userApi/ApiUrl';
 type Props = NativeStackScreenProps<RootStackParamList, 'SelectBoard'>;
 
 const SelectBoard = ({ navigation }: Props) => {
-    const { labels, language } = useLanguage();
+    const { labels } = useLanguage();
     const [selectedBoard, setSelectedBoard] = useState<string | null>('');
     const [boards, setBoards] = useState<any[]>([]);
 
     const board = async () => {
         try {
             const res = await GET_API_PUBLIC(ApiUrl.GET_BOARDS);
-            console.log('Boards API RESPONSE:', res?.data);
             setBoards(res?.data || []);
         } catch (error) {
             console.log(error);
@@ -102,9 +101,6 @@ const SelectBoard = ({ navigation }: Props) => {
                         activeOpacity={0.8}
                     >
                         <View style={styles.cardTop}>
-                            {/* <View style={styles.iconContainer}>
-                                <Text style={styles.iconEmoji}>{board.icon}</Text>
-                            </View> */}
                             {selectedBoard === board._id && (
                                 <View style={styles.checkCircle}>
                                     <Text style={styles.checkText}>✓</Text>

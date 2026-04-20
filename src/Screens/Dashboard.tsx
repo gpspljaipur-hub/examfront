@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -18,41 +18,93 @@ import fonts from '../comman/fonts';
 import ScreenWrapper from '../comman/ScreenWrapper';
 import { useLanguage } from '../context/LanguageContext';
 import BottomTab from '../comman/BottomTab';
+import { Post_Api } from '../userApi/Request';
+import ApiUrl from '../userApi/ApiUrl';
 
 
 const { width } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Dashboard'>;
 
-const Dashboard = ({ navigation }: Props) => {
+const Dashboard = ({ navigation, route }: Props) => {
     const { labels } = useLanguage();
+    const { boardId, classId } = route.params;
+    const [subjects, setSubjects] = React.useState<any[]>([]);
 
-    const subjects = [
-        {
-            id: '1',
-            title: 'Mathematics',
-            subtitle: 'Class 9 • CBSE',
-            icon: '📐',
-            progress: 0.75,
-            color: '#E0F2F1',
-        },
-        {
-            id: '2',
-            title: 'Science',
-            subtitle: 'Class 9 • CBSE',
-            icon: '🧬',
-            progress: 0.45,
-            color: '#E8EAF6',
-        },
-        {
-            id: '3',
-            title: 'English',
-            subtitle: 'Class 9 • CBSE',
-            icon: '📖',
-            progress: 1.00,
-            color: '#E8EAF6',
-        },
-    ];
+    console.log(boardId, classId, "boardId, classIdboardId, classId");
+
+    const getIcon = (name: any) => {
+        const n = name.toLowerCase();
+
+        if (n.includes('math')) return '📐';
+        if (n.includes('science')) return '🧬';
+        if (n.includes('english')) return '📖';
+        if (n.includes('hindi')) return '📝';
+        if (n.includes('sanskrit')) return '📜';
+
+        return '📚'; // default
+    };
+
+    const getColor = (name: any) => {
+        const colors = ['#E0F2F1', '#E8EAF6', '#FFF3E0', '#FCE4EC'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    };
+
+    const getSubjects = async () => {
+        try {
+            const res = await Post_Api(ApiUrl.GET_SUBJECT, {
+                boardId: boardId,
+                classId: classId,
+            });
+
+            const apiData = res?.data || [];
+
+            const formatted = apiData.map((item: any) => ({
+                id: item._id,
+                title: item.name,
+                subtitle: `${item.classId?.name} • ${item.classId?.boardId?.name}`,
+                icon: getIcon(item.name),
+                progress: Math.random(),
+                color: getColor(item.name),
+            }));
+
+            setSubjects(formatted);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
+        getSubjects()
+    }, [boardId])
+
+
+    // const subjects = [
+    //     {
+    //         id: '1',
+    //         title: 'Mathematics',
+    //         subtitle: 'Class 9 • CBSE',
+    //         icon: '📐',
+    //         progress: 0.75,
+    //         color: '#E0F2F1',
+    //     },
+    //     {
+    //         id: '2',
+    //         title: 'Science',
+    //         subtitle: 'Class 9 • CBSE',
+    //         icon: '🧬',
+    //         progress: 0.45,
+    //         color: '#E8EAF6',
+    //     },
+    //     {
+    //         id: '3',
+    //         title: 'English',
+    //         subtitle: 'Class 9 • CBSE',
+    //         icon: '📖',
+    //         progress: 1.00,
+    //         color: '#E8EAF6',
+    //     },
+    // ];
 
     const recommended = [
         {
@@ -72,6 +124,7 @@ const Dashboard = ({ navigation }: Props) => {
             image: require('../assets/images/physics_lesson.png'),
         },
     ];
+
     const handleChat = () => {
         navigation.navigate('ChatScreen');
     };
@@ -157,7 +210,7 @@ const Dashboard = ({ navigation }: Props) => {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
                     {subjects.map((subject) => (
                         <TouchableOpacity key={subject.id} style={styles.subjectCard}
-                            onPress={() => navigation.navigate('SyllabusList', { subjectTitle: subject.title })}
+                            onPress={() => navigation.navigate('SyllabusList', { subjectId: subject.id, boardId, classId })}
                         >
                             <View style={[styles.subjectIconContainer, { backgroundColor: subject.color }]}>
                                 <Text style={styles.subjectIcon}>{subject.icon}</Text>

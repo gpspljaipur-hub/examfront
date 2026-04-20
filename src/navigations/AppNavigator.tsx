@@ -20,12 +20,12 @@ export type RootStackParamList = {
     SelectLanguage: undefined;
     SelectClass: { boardId: string };
     SelectBoard: undefined;
-    Dashboard: undefined;
+    Dashboard: { boardId: any, classId: any };
     ProgressScreen: undefined;
     ChatScreen: undefined;
-    SyllabusList: { subjectTitle?: string };
     Profile: undefined;
     Question: { chapterId: string; chapterTitle: string };
+    SyllabusList: { subjectId?: any, boardId: any, classId: any };
 };
 
 
