@@ -35,7 +35,10 @@ export type RootStackParamList = {
         correctAnswers: number,
         incorrectAnswers: number,
         notAttempted: any,
-        timeTaken: string
+        timeTaken: string,
+        subjectId: any,
+        boardId: any,
+        classId: any
     };
     Solution: { questionIndex?: number };
 };
