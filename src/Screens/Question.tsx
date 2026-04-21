@@ -20,7 +20,8 @@ import ApiUrl from '../userApi/ApiUrl';
 import { Post_Api } from '../userApi/Request';
 import { useLanguage } from '../hooks/useLanguage';
 import { useDispatch, useSelector } from 'react-redux';
-import { saveAnswer, setQuestions, submitTest } from '../store/slice/testSlice';
+import { saveAnswer, setQuestions, setTestId, submitTest } from '../store/slice/testSlice';
+import { RootState } from '../store/store';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Question'>;
 
@@ -35,11 +36,32 @@ const Question = ({ navigation, route }: Props) => {
     const { language } = useLanguage();
     const [questions, setQuestion] = useState<QuestionType[]>([]);
     const dispatch = useDispatch();
+    const testId = useSelector((state: RootState) => state.test.testId);
     const currentQuestion = questions[currentIndex];
+    // const [testId, setTestId] = useState<string | null>(null);
+
+    // const transformQuestions = (data: any[]): QuestionType[] => {
+
+    //     return data.map((item, index) => ({
+    //         id: item._id,
+    //         questionText: item.question,
+
+    //         options: item.options.map((opt: string) => {
+    //             const [id, ...textParts] = opt.split('.');
+    //             return {
+    //                 id: id.trim(), // A, B, C, D
+    //                 text: textParts.join('.').trim(),
+    //             };
+    //         }),
+
+    //         correctAnswer: item.correctAnswer,
+    //         type: "Multiple Choice",
+    //         points: 1,
+    //         hint: item.explanation || "",
+    //     }));
+    // };
 
     const transformQuestions = (data: any[]): QuestionType[] => {
-        console.log(data, "datatatata");
-
         return data.map((item, index) => ({
             id: item._id,
             questionText: item.question,
@@ -47,7 +69,7 @@ const Question = ({ navigation, route }: Props) => {
             options: item.options.map((opt: string) => {
                 const [id, ...textParts] = opt.split('.');
                 return {
-                    id: id.trim(), // A, B, C, D
+                    id: id.trim(),
                     text: textParts.join('.').trim(),
                 };
             }),
@@ -56,6 +78,7 @@ const Question = ({ navigation, route }: Props) => {
             type: "Multiple Choice",
             points: 1,
             hint: item.explanation || "",
+            solution: item.explanation || "",
         }));
     };
 
@@ -75,28 +98,27 @@ const Question = ({ navigation, route }: Props) => {
     useEffect(() => {
         fetchQuestions()
     }, [])
-
     const fetchQuestions = async () => {
         try {
-            const res = await Post_Api(ApiUrl.GET_QUESTION, {
-                subjectId: subjectId,
-                boardId: boardId,
-                classId: classId,
-                chapterId: chapterId,
-                language: language ? language === 'en' ? 'english' : 'hi' : 'Hindi',
-
+            const res = await Post_Api('/ai/generate-questions', {
+                subjectId,
+                boardId,
+                classId,
+                chapterId,
+                language: language ? (language === 'en' ? 'english' : 'hi') : 'Hindi',
             });
-            const formatted = transformQuestions(res?.data?.data || []);
-            console.log(formatted, "formmatteddata");
 
+            console.log("FULL RESPONSE:", res.data);
+
+            dispatch(setTestId(res.data.testId));
+            const formatted = transformQuestions(res?.data?.data || []);
             setQuestion(formatted);
             dispatch(setQuestions(formatted));
 
         } catch (error) {
             console.log(error, "error");
-
         }
-    }
+    };
 
 
     const formatTime = (seconds: number) => {
@@ -154,16 +176,17 @@ const Question = ({ navigation, route }: Props) => {
 
             return acc;
         }, { correct: 0, incorrect: 0, notAttempted: 0 });
+        console.log(results, "resultsresultsresults");
 
         const score = Math.round((results.correct / questions.length) * 100) || 0;
         const timeTaken = 2700 - timeLeft;
-
         navigation.navigate('Result', {
             ...route.params,
+            testId: testId,
             score,
             correctAnswers: results.correct,
             incorrectAnswers: results.incorrect,
-            notAttempted: results.notAttempted, // ✅ add this
+            notAttempted: results.notAttempted,
             timeTaken: `${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s`
         });
     };

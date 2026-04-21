@@ -31,6 +31,7 @@ export type RootStackParamList = {
     Result: {
         chapterId: string,
         chapterTitle: string,
+        testId: string | null,
         score: number,
         correctAnswers: number,
         incorrectAnswers: number,

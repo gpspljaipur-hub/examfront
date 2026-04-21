@@ -5,6 +5,7 @@ type AnswerMap = Record<string, string>;
 interface TestState {
   questions: any[];
   answers: AnswerMap;
+  testId: string | null; // ✅
   result: {
     score: number;
     total: number;
@@ -17,6 +18,7 @@ interface TestState {
 const initialState: TestState = {
   questions: [],
   answers: {},
+  testId: null, // ✅
   result: null,
 };
 
@@ -26,6 +28,10 @@ const testSlice = createSlice({
   reducers: {
     setQuestions(state, action: PayloadAction<any[]>) {
       state.questions = action.payload;
+    },
+
+    setTestId(state, action: PayloadAction<string>) {
+      state.testId = action.payload;
     },
 
     saveAnswer(state, action: PayloadAction<{ qId: string; ans: string }>) {
@@ -63,11 +69,12 @@ const testSlice = createSlice({
     resetTest(state) {
       state.answers = {};
       state.result = null;
+      state.testId = null; // ✅ reset bhi kar do
     },
   },
 });
 
-export const { setQuestions, saveAnswer, submitTest, resetTest } =
+export const { setQuestions, setTestId, saveAnswer, submitTest, resetTest } =
   testSlice.actions;
 
 export default testSlice.reducer;
