@@ -53,7 +53,7 @@ const Dashboard = ({ navigation, route }: Props) => {
     const getSubjects = async () => {
         try {
             const res = await Post_Api(ApiUrl.GET_SUBJECT, {
-                boardId: boardId,
+                // boardId: boardId,
                 classId: classId,
             });
 
