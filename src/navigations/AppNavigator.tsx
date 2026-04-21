@@ -26,7 +26,7 @@ export type RootStackParamList = {
     ProgressScreen: undefined;
     AiTutor: undefined;
     Profile: undefined;
-    Question: { chapterId: string; chapterTitle: string };
+    Question: { chapterId: string; chapterTitle: string, subjectId: any, boardId: any, classId: any };
     SyllabusList: { subjectId?: any, boardId: any, classId: any };
     Result: {
         chapterId: string,
@@ -34,6 +34,7 @@ export type RootStackParamList = {
         score: number,
         correctAnswers: number,
         incorrectAnswers: number,
+        notAttempted: any,
         timeTaken: string
     };
     Solution: { questionIndex?: number };

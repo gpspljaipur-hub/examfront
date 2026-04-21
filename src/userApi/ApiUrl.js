@@ -6,6 +6,7 @@ const ApiUrl = {
   GET_CLASSES: '/classes/get-class',
   GET_SUBJECT: '/subjects/get-subject',
   GET_CHAPTER: '/chapters/get-chapter',
+  GET_QUESTION: '/ai/generate-questions',
 };
 
 export default ApiUrl;

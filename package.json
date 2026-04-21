@@ -15,6 +15,7 @@
     "@react-native/new-app-screen": "0.85.1",
     "@react-navigation/native": "^7.2.2",
     "@react-navigation/native-stack": "^7.14.11",
+    "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.15.0",
     "react": "19.2.3",
     "react-is": "^19.2.5",
@@ -22,7 +23,8 @@
     "react-native-responsive-screen": "^1.4.2",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.24.0",
-    "react-native-toast-message": "^2.3.3"
+    "react-native-toast-message": "^2.3.3",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

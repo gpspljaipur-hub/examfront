@@ -11,7 +11,6 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
 import { Colors } from '../comman/Colors';
-import FontsSize from '../comman/FontsSize';
 import MarginHW from '../comman/MarginHW';
 import fonts from '../comman/fonts';
 import ScreenWrapper from '../comman/ScreenWrapper';
@@ -22,7 +21,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SyllabusList'>;
 
 const SyllabusList = ({ navigation, route }: Props) => {
     const { subjectId, boardId, classId } = route.params || {};
-    console.log(subjectId, boardId, classId, "======");
     const [syllabusData, setSyllabusData] = useState<any[]>([]);
     const getChapters = async () => {
         try {
@@ -31,8 +29,6 @@ const SyllabusList = ({ navigation, route }: Props) => {
             });
 
             const apiData = res?.data || [];
-
-            // 👉 Each chapter = separate unit
             const formatted = apiData.map((item: any, index: number) => ({
                 id: item._id,
                 unit: `Unit ${index + 1}`,
@@ -57,51 +53,16 @@ const SyllabusList = ({ navigation, route }: Props) => {
     }, [boardId])
 
 
-    // const syllabusData = [
-    //     {
-    //         id: '1',
-    //         unit: 'Unit 1',
-    //         title: 'Number Systems',
-    //         chapters: [
-    //             { id: '1-1', title: 'Real Numbers', status: 'Completed', progress: 1 },
-    //             { id: '1-2', title: 'Rational & Irrational Numbers', status: 'In Progress', progress: 0.6 },
-    //         ],
-    //     },
-    //     {
-    //         id: '2',
-    //         unit: 'Unit 2',
-    //         title: 'Algebra',
-    //         chapters: [
-    //             { id: '2-1', title: 'Polynomials', status: 'Not Started', progress: 0 },
-    //             { id: '2-2', title: 'Linear Equations in Two Variables', status: 'Not Started', progress: 0 },
-    //         ],
-    //     },
-    //     {
-    //         id: '3',
-    //         unit: 'Unit 3',
-    //         title: 'Coordinate Geometry',
-    //         chapters: [
-    //             { id: '3-1', title: 'Introduction to Coordinate Geometry', status: 'Not Started', progress: 0 },
-    //         ],
-    //     },
-    //     {
-    //         id: '4',
-    //         unit: 'Unit 4',
-    //         title: 'Geometry',
-    //         chapters: [
-    //             { id: '4-1', title: 'Lines and Angles', status: 'Not Started', progress: 0 },
-    //             { id: '4-2', title: 'Triangles', status: 'Not Started', progress: 0 },
-    //             { id: '4-3', title: 'Quadrilaterals', status: 'Not Started', progress: 0 },
-    //         ],
-    //     },
-    // ];
 
     const renderChapter = ({ item }: { item: any }) => (
         <TouchableOpacity
             style={styles.chapterCard}
             onPress={() => navigation.navigate('Question', {
                 chapterId: item.id,
-                chapterTitle: item.title
+                chapterTitle: item.title,
+                subjectId: subjectId,
+                boardId: boardId,
+                classId: classId,
             })}
         >
             <View style={styles.chapterInfo}>

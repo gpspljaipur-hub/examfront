@@ -12,10 +12,12 @@ import fonts from '../comman/fonts';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
-
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 const Result = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Result'>>();
+  const resultData = useSelector((state: RootState) => state.test.result);
   const {
     chapterId,
     chapterTitle,
@@ -25,9 +27,13 @@ const Result = () => {
     timeTaken
   } = route.params;
 
+  console.log(resultData, "resultDataresultDataresultDataresultData");
+
+
   const stats = [
-    { label: 'Correct', value: correctAnswers, icon: '✓', color: '#00BFA5', bg: '#E0F2F1' },
-    { label: 'Incorrect', value: incorrectAnswers, icon: '×', color: '#FF5252', bg: '#FFEBEE' },
+    { label: 'Correct', value: resultData?.correct, icon: '✓', color: '#00BFA5', bg: '#E0F2F1' },
+    { label: 'Incorrect', value: resultData?.wrong, icon: '×', color: '#FF5252', bg: '#FFEBEE' },
+    { label: 'Not Attempted', value: resultData?.notAttempted, icon: '⚠', color: '#FFC107', bg: '#FFF8E1' },
     { label: 'Time Taken', value: timeTaken, icon: '🕒', color: '#2196F3', bg: '#E3F2FD' },
   ];
 
@@ -102,14 +108,14 @@ const Result = () => {
           </Text>
 
           <TouchableOpacity style={styles.aiButtonPrimary}
-            onPress={() => navigation.navigate('Solution')}
+          // onPress={() => navigation.navigate('Solution')}
           >
             <Text style={styles.aiButtonTextPrimary}>💬 View Solution & Analysis</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.aiButtonSecondary}
-            onPress={() => navigation.navigate('Question', { chapterId, chapterTitle })}
+          // onPress={() => navigation.navigate('Question', { chapterId, chapterTitle })}
           >
             <Text style={styles.aiButtonTextSecondary}>Retake Test</Text>
           </TouchableOpacity>

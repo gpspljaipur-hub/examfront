@@ -15,20 +15,49 @@ import { Colors } from '../comman/Colors';
 import fonts from '../comman/fonts';
 import MarginHW from '../comman/MarginHW';
 import ScreenWrapper from '../comman/ScreenWrapper';
-import { questionData } from '../data/QuestionData';
+import { questionData, QuestionType } from '../data/QuestionData';
+import ApiUrl from '../userApi/ApiUrl';
+import { Post_Api } from '../userApi/Request';
+import { useLanguage } from '../hooks/useLanguage';
+import { useDispatch, useSelector } from 'react-redux';
+import { saveAnswer, setQuestions, submitTest } from '../store/slice/testSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Question'>;
 
 const { width } = Dimensions.get('window');
 
 const Question = ({ navigation, route }: Props) => {
-    const { chapterTitle } = route.params;
+    const { chapterId, chapterTitle, classId, boardId, subjectId } = route.params;
     const [timeLeft, setTimeLeft] = useState(2700);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
     const [markedForReview, setMarkedForReview] = useState<Set<string>>(new Set());
+    const { language } = useLanguage();
+    const [questions, setQuestion] = useState<QuestionType[]>([]);
+    const dispatch = useDispatch();
+    const currentQuestion = questions[currentIndex];
 
-    const currentQuestion = questionData[currentIndex];
+    const transformQuestions = (data: any[]): QuestionType[] => {
+        console.log(data, "datatatata");
+
+        return data.map((item, index) => ({
+            id: item._id,
+            questionText: item.question,
+
+            options: item.options.map((opt: string) => {
+                const [id, ...textParts] = opt.split('.');
+                return {
+                    id: id.trim(), // A, B, C, D
+                    text: textParts.join('.').trim(),
+                };
+            }),
+
+            correctAnswer: item.correctAnswer,
+            type: "Multiple Choice",
+            points: 1,
+            hint: item.explanation || "",
+        }));
+    };
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -43,6 +72,32 @@ const Question = ({ navigation, route }: Props) => {
         }, 1000);
         return () => clearInterval(timer);
     }, []);
+    useEffect(() => {
+        fetchQuestions()
+    }, [])
+
+    const fetchQuestions = async () => {
+        try {
+            const res = await Post_Api(ApiUrl.GET_QUESTION, {
+                subjectId: subjectId,
+                boardId: boardId,
+                classId: classId,
+                chapterId: chapterId,
+                language: language ? language === 'en' ? 'english' : 'hi' : 'Hindi',
+
+            });
+            const formatted = transformQuestions(res?.data?.data || []);
+            console.log(formatted, "formmatteddata");
+
+            setQuestion(formatted);
+            dispatch(setQuestions(formatted));
+
+        } catch (error) {
+            console.log(error, "error");
+
+        }
+    }
+
 
     const formatTime = (seconds: number) => {
         const h = Math.floor(seconds / 3600);
@@ -54,58 +109,67 @@ const Question = ({ navigation, route }: Props) => {
     const handleOptionSelect = (optionId: string) => {
         setAnswers(prev => ({
             ...prev,
-            [currentQuestion.id]: optionId
+            [currentQuestion?.id]: optionId
         }));
+        dispatch(saveAnswer({ qId: currentQuestion.id, ans: optionId }));
     };
 
     const toggleMarkForReview = () => {
         setMarkedForReview(prev => {
             const newSet = new Set(prev);
-            if (newSet.has(currentQuestion.id)) {
-                newSet.delete(currentQuestion.id);
+            if (newSet.has(currentQuestion?.id)) {
+                newSet.delete(currentQuestion?.id);
             } else {
-                newSet.add(currentQuestion.id);
+                newSet.add(currentQuestion?.id);
             }
             return newSet;
         });
     };
 
     const handleNext = () => {
-        if (currentIndex < questionData.length - 1) {
+        if (currentIndex < questions.length - 1) {
             setCurrentIndex(currentIndex + 1);
         }
     };
 
-    const handlePrevious = () => {
+    const handlePrevious = async () => {
         if (currentIndex > 0) {
             setCurrentIndex(currentIndex - 1);
         }
+
     };
 
     const handleSubmit = () => {
-        const results = questionData.reduce((acc, q) => {
+        dispatch(submitTest());
+        const results = questions.reduce((acc, q) => {
             const userAnswer = answers[q.id];
-            if (userAnswer) {
-                userAnswer === q.correctAnswer ? acc.correct++ : acc.incorrect++;
-            }
-            return acc;
-        }, { correct: 0, incorrect: 0 });
 
-        const score = Math.round((results.correct / questionData.length) * 100) || 0;
+            if (!userAnswer) {
+                acc.notAttempted++; // ✅ new
+            } else if (userAnswer === q.correctAnswer) {
+                acc.correct++;
+            } else {
+                acc.incorrect++;
+            }
+
+            return acc;
+        }, { correct: 0, incorrect: 0, notAttempted: 0 });
+
+        const score = Math.round((results.correct / questions.length) * 100) || 0;
         const timeTaken = 2700 - timeLeft;
 
-        navigation.navigate('Result', { 
+        navigation.navigate('Result', {
             ...route.params,
             score,
             correctAnswers: results.correct,
             incorrectAnswers: results.incorrect,
+            notAttempted: results.notAttempted, // ✅ add this
             timeTaken: `${Math.floor(timeTaken / 60)}m ${timeTaken % 60}s`
         });
     };
-
     const getProgress = () => {
         const answeredCount = Object.keys(answers).length;
-        return (answeredCount / questionData.length) * 100;
+        return (answeredCount / questions.length) * 100;
     };
 
     return (
@@ -142,36 +206,36 @@ const Question = ({ navigation, route }: Props) => {
                             <Text style={styles.questionBadgeText}>QUESTION</Text>
                             <Text style={styles.questionNumberText}>{(currentIndex + 1).toString().padStart(2, '0')}</Text>
                         </View>
-                        <Text style={styles.questionType}>{currentQuestion.type} • {currentQuestion.points} Points</Text>
+                        <Text style={styles.questionType}>{currentQuestion?.type} • {currentQuestion?.points} Points</Text>
                     </View>
 
-                    <Text style={styles.questionText}>{currentQuestion.questionText}</Text>
+                    <Text style={styles.questionText}>{currentQuestion?.questionText}</Text>
 
-                    {currentQuestion.equation && (
+                    {currentQuestion?.equation && (
                         <View style={styles.equationContainer}>
-                            <Text style={styles.equationText}>{currentQuestion.equation}</Text>
+                            <Text style={styles.equationText}>{currentQuestion?.equation}</Text>
                         </View>
                     )}
 
-                    {currentQuestion.options.map((option) => (
+                    {currentQuestion?.options.map((option) => (
                         <TouchableOpacity
                             key={option.id}
                             style={[
                                 styles.optionCard,
-                                answers[currentQuestion.id] === option.id && styles.selectedOptionCard
+                                answers[currentQuestion?.id] === option?.id && styles.selectedOptionCard
                             ]}
-                            onPress={() => handleOptionSelect(option.id)}
+                            onPress={() => handleOptionSelect(option?.id)}
                         >
                             <View style={[
                                 styles.optionLetterContainer,
-                                answers[currentQuestion.id] === option.id && styles.selectedOptionLetterContainer
+                                answers[currentQuestion?.id] === option?.id && styles.selectedOptionLetterContainer
                             ]}>
                                 <Text style={[
                                     styles.optionLetter,
-                                    answers[currentQuestion.id] === option.id && styles.selectedOptionLetter
-                                ]}>{option.id}</Text>
+                                    answers[currentQuestion?.id] === option?.id && styles.selectedOptionLetter
+                                ]}>{option?.id}</Text>
                             </View>
-                            <Text style={styles.optionText}>{option.text}</Text>
+                            <Text style={styles.optionText}>{option?.text}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>
@@ -181,29 +245,27 @@ const Question = ({ navigation, route }: Props) => {
                     <TouchableOpacity
                         style={[styles.prevButton, currentIndex === 0 && { opacity: 0.5 }]}
                         onPress={handlePrevious}
-                        disabled={currentIndex === 0}
-                    >
+                        disabled={currentIndex === questions.length - 1}                    >
                         <Text style={styles.prevButtonText}>← Previous</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={[
                             styles.markReviewButton,
-                            markedForReview.has(currentQuestion.id) && { backgroundColor: '#E0CCFF' }
+                            markedForReview.has(currentQuestion?.id) && { backgroundColor: '#E0CCFF' }
                         ]}
                         onPress={toggleMarkForReview}
                     >
-                        <Text style={styles.markReviewIcon}>{markedForReview.has(currentQuestion.id) ? '🔖' : '📑'}</Text>
+                        <Text style={styles.markReviewIcon}>{markedForReview.has(currentQuestion?.id) ? '🔖' : '📑'}</Text>
                         <Text style={styles.markReviewText}>
-                            {markedForReview.has(currentQuestion.id) ? 'Marked' : 'Mark for Review'}
+                            {markedForReview.has(currentQuestion?.id) ? 'Marked' : 'Mark for Review'}
                         </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.nextButton, currentIndex === questionData.length - 1 && { opacity: 0.5 }]}
+                        style={[styles.nextButton, currentIndex === questions.length - 1 && { opacity: 0.5 }]}
                         onPress={handleNext}
-                        disabled={currentIndex === questionData.length - 1}
-                    >
+                        disabled={currentIndex === questions.length - 1}                    >
                         <Text style={styles.nextButtonText}>Next Question</Text>
                     </TouchableOpacity>
                 </View>
@@ -212,14 +274,14 @@ const Question = ({ navigation, route }: Props) => {
                 <View style={styles.paletteContainer}>
                     <Text style={styles.paletteHeading}>QUESTION PALETTE</Text>
                     <View style={styles.paletteGrid}>
-                        {questionData.map((q, index) => {
-                            const isAnswered = !!answers[q.id];
-                            const isMarked = markedForReview.has(q.id);
+                        {questions?.map((q, index) => {
+                            const isAnswered = !!answers[q?.id];
+                            const isMarked = markedForReview.has(q?.id);
                             const isCurrent = index === currentIndex;
 
                             return (
                                 <TouchableOpacity
-                                    key={q.id}
+                                    key={q?.id}
                                     onPress={() => setCurrentIndex(index)}
                                     style={[
                                         styles.paletteCircle,
@@ -272,7 +334,7 @@ const Question = ({ navigation, route }: Props) => {
                         </View>
                     </View>
                     <Text style={styles.aiBuddyText}>
-                        {currentQuestion.hint}
+                        {currentQuestion?.hint}
                     </Text>
                     <TouchableOpacity style={styles.hintButton}>
                         <Text style={styles.hintButtonText}>Unlock Hint (1)</Text>
