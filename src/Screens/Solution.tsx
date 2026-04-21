@@ -95,8 +95,6 @@ const Solution = () => {
                         )}
                     />
                 </View>
-
-
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                     {/* Question Card */}
                     <View style={styles.solutionCard}>
