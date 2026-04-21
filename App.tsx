@@ -6,15 +6,19 @@ import {
 import AppNavigator from './src/navigations/AppNavigator';
 import Toast from 'react-native-toast-message';
 import { LanguageProvider } from './src/context/LanguageContext';
+import { Provider } from 'react-redux';
+import { store } from './src/store/store';
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <SafeAreaProvider>
-      <LanguageProvider>
-        <AppNavigator />
-      </LanguageProvider>
-      <Toast position='top' />
+      <Provider store={store}>
+        <LanguageProvider>
+          <AppNavigator />
+        </LanguageProvider>
+        <Toast position='top' />
+      </Provider>
     </SafeAreaProvider>
   );
 }
