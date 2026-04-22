@@ -50,7 +50,7 @@ const SyllabusList = ({ navigation, route }: Props) => {
     };
     useEffect(() => {
         getChapters()
-    }, [boardId])
+    }, [subjectId, boardId])
 
 
 

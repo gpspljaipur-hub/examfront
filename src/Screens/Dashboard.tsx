@@ -76,7 +76,7 @@ const Dashboard = ({ navigation, route }: Props) => {
     };
     useEffect(() => {
         getSubjects()
-    }, [boardId])
+    }, [boardId, classId])
 
 
     // const subjects = [
