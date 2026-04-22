@@ -8,6 +8,7 @@ import {
     ScrollView,
     Dimensions,
     Alert,
+    ActivityIndicator,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
@@ -29,6 +30,7 @@ const { width } = Dimensions.get('window');
 
 const Question = ({ navigation, route }: Props) => {
     const { chapterId, chapterTitle, classId, boardId, subjectId } = route.params;
+    const [loading, setLoading] = useState(true);
     const [timeLeft, setTimeLeft] = useState(2700);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
@@ -100,6 +102,7 @@ const Question = ({ navigation, route }: Props) => {
     }, [])
     const fetchQuestions = async () => {
         try {
+            setLoading(true);
             const res = await Post_Api('/ai/generate-questions', {
                 subjectId,
                 boardId,
@@ -118,6 +121,10 @@ const Question = ({ navigation, route }: Props) => {
         } catch (error) {
             console.log(error, "error");
         }
+        finally {
+            setLoading(false);
+        }
+
     };
 
 
@@ -195,6 +202,27 @@ const Question = ({ navigation, route }: Props) => {
         return (answeredCount / questions.length) * 100;
     };
 
+    if (loading) {
+        return (
+            <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#F7F8FF'
+            }}>
+                <ActivityIndicator size="large" color="#5c52cb" />
+
+                <Text style={{
+                    marginTop: 15,
+                    fontSize: 16,
+                    color: '#5c52cb',
+                    fontWeight: '600'
+                }}>
+                    Loading Questions...
+                </Text>
+            </View>
+        );
+    }
     return (
         <ScreenWrapper style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#FDFBFF" />

@@ -18,6 +18,7 @@ import fonts from '../comman/fonts';
 import ScreenWrapper from '../comman/ScreenWrapper';
 import { useLanguage } from '../context/LanguageContext';
 import BottomTab from '../comman/BottomTab';
+import Header from '../comman/Header';
 
 const { width } = Dimensions.get('window');
 
@@ -91,21 +92,7 @@ const ProgressScreen = ({ navigation }: Props) => {
             <StatusBar barStyle="dark-content" backgroundColor="#FDFBFF" />
 
             {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.userInfo}>
-                    <View style={styles.avatarContainer}>
-                        <Image
-                            source={require('../assets/images/ai_tutor_character.png')}
-                            style={styles.avatarImage}
-                        />
-                    </View>
-                    <Text style={styles.headerTitle}>{labels.MyRewards}</Text>
-                </View>
-                <View style={styles.pointsBadge}>
-                    <Text style={styles.pointsIcon}>🏆</Text>
-                    <Text style={styles.pointsText}>1,250 {labels.Points}</Text>
-                </View>
-            </View>
+            <Header />
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 {/* Greeting */}
@@ -214,51 +201,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FDFBFF',
     },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: MarginHW.PaddingW20,
-        height: 60,
-    },
-    userInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    avatarContainer: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        borderWidth: 1,
-        borderColor: '#E9E7FF',
-        overflow: 'hidden',
-    },
-    avatarImage: {
-        width: '100%',
-        height: '100%',
-    },
-    headerTitle: {
-        fontSize: FontsSize.size18,
-        fontFamily: fonts.LexendBold,
-        color: '#1A1A3F',
-        marginLeft: 10,
-    },
-    pointsBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F3EFFF',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-    },
-    pointsIcon: {
-        marginRight: 6,
-    },
-    pointsText: {
-        fontSize: 12,
-        fontFamily: fonts.LexendBold,
-        color: '#1A1A3F',
-    },
+
     scrollContent: {
         paddingBottom: 110,
     },
