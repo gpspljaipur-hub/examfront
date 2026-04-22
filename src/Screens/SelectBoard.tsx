@@ -20,6 +20,7 @@ import Toast from 'react-native-toast-message';
 import { useLanguage } from '../context/LanguageContext';
 import { Get_Api, GET_API_PUBLIC } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../store/slice/authSlice';
@@ -31,7 +32,6 @@ const SelectBoard = ({ navigation }: Props) => {
     const { labels } = useLanguage();
     const [selectedBoard, setSelectedBoard] = useState<string | null>('');
     const [boards, setBoards] = useState<any[]>([]);
-
     const board = async () => {
         try {
             const res = await GET_API_PUBLIC(ApiUrl.GET_BOARDS);
@@ -44,7 +44,7 @@ const SelectBoard = ({ navigation }: Props) => {
         board()
     }, [])
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
         if (!selectedBoard) {
             Toast.show({
                 type: 'error',
@@ -53,8 +53,6 @@ const SelectBoard = ({ navigation }: Props) => {
             });
             return;
         }
-
-        dispatch(setUserData({ boardId: selectedBoard }));
         navigation.navigate('SelectClass', {
             boardId: selectedBoard,
         });

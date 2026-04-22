@@ -7,7 +7,7 @@ import {
     Image,
     ScrollView,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ScreenWrapper from '../comman/ScreenWrapper';
 import HWSize from '../comman/HWSize';
 import fonts from '../comman/fonts';
@@ -15,8 +15,10 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
 import { useLanguage } from '../context/LanguageContext';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slice/authSlice';
+import { RootState } from '../store/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -27,7 +29,17 @@ const Profile = () => {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedBoard, setSelectedBoard] = useState('');
     const { language, setLanguage, labels } = useLanguage();
+    const profile = useSelector((state: RootState) => state.profile);
 
+    useEffect(() => {
+        if (profile) {
+            setFullName(profile.fullName || '');
+            setEmail(profile.email || '');
+            setMobile(profile.mobile || '');
+            setSelectedBoard(profile.boardName || '');
+            setSelectedClass(profile.className || '');
+        }
+    }, [profile]);
 
     return (
         <ScreenWrapper style={styles.container}>
@@ -100,6 +112,17 @@ const Profile = () => {
                         <Text style={styles.fieldIcon}>📱</Text>
                     </View>
                 </View>
+                {/* Educational Board Dropdown */}
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>{labels.EducationalBoard}</Text>
+                    <TouchableOpacity
+                        style={styles.dropdown}
+                        onPress={() => navigation.navigate('SelectBoard')}
+                    >
+                        <Text style={styles.dropdownText}>{selectedBoard || 'Select Board'}</Text>
+                        <Text style={styles.dropdownIcon}>⌄</Text>
+                    </TouchableOpacity>
+                </View>
 
                 {/* Class Selection */}
                 <View style={styles.inputGroup}>
@@ -113,17 +136,7 @@ const Profile = () => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Educational Board Dropdown */}
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>{labels.EducationalBoard}</Text>
-                    <TouchableOpacity
-                        style={styles.dropdown}
-                        onPress={() => navigation.navigate('SelectBoard')}
-                    >
-                        <Text style={styles.dropdownText}>{selectedBoard || 'Select Board'}</Text>
-                        <Text style={styles.dropdownIcon}>⌄</Text>
-                    </TouchableOpacity>
-                </View>
+
 
                 {/* Language Preference */}
                 <View style={styles.inputGroup}>

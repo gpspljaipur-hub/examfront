@@ -118,7 +118,6 @@ const OTPScreen = ({ navigation, route }: any) => {
 
         try {
             Keyboard.dismiss();
-
             const res = await Post_Api(ApiUrl.VERIFY_OTP, {
                 phone: mobile,
                 otp: otpCode,
@@ -133,14 +132,14 @@ const OTPScreen = ({ navigation, route }: any) => {
                 });
 
                 const user = res?.data?.user;
-                dispatch(loginSuccess({ 
+                dispatch(loginSuccess({
                     mobile,
-                    ...user 
+                    ...user
                 }));
                 if (user?.boardId && user?.classId) {
-                    navigation.replace('Dashboard', { 
-                        boardId: user.boardId, 
-                        classId: user.classId 
+                    navigation.replace('Dashboard', {
+                        boardId: user.boardId,
+                        classId: user.classId
                     });
                 } else {
                     navigation.navigate('SelectLanguage');

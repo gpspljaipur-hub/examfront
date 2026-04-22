@@ -40,29 +40,6 @@ const Question = ({ navigation, route }: Props) => {
     const dispatch = useDispatch();
     const testId = useSelector((state: RootState) => state.test.testId);
     const currentQuestion = questions[currentIndex];
-    // const [testId, setTestId] = useState<string | null>(null);
-
-    // const transformQuestions = (data: any[]): QuestionType[] => {
-
-    //     return data.map((item, index) => ({
-    //         id: item._id,
-    //         questionText: item.question,
-
-    //         options: item.options.map((opt: string) => {
-    //             const [id, ...textParts] = opt.split('.');
-    //             return {
-    //                 id: id.trim(), // A, B, C, D
-    //                 text: textParts.join('.').trim(),
-    //             };
-    //         }),
-
-    //         correctAnswer: item.correctAnswer,
-    //         type: "Multiple Choice",
-    //         points: 1,
-    //         hint: item.explanation || "",
-    //     }));
-    // };
-
     const transformQuestions = (data: any[]): QuestionType[] => {
         return data.map((item, index) => ({
             id: item._id,

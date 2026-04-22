@@ -19,20 +19,30 @@ import ScreenWrapper from '../comman/ScreenWrapper';
 import { useLanguage } from '../context/LanguageContext';
 import { Post_Api } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { setProfile } from '../store/slice/profileSlice';
 
-import { useDispatch } from 'react-redux';
 import { setUserData } from '../store/slice/authSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SelectClass'>;
 
+const STORAGE_KEYS = {
+    CLASSID: 'classId',
+};
+
+
 const SelectClass = ({ navigation, route }: Props) => {
-    const dispatch = useDispatch();
     const { boardId } = route.params;
     console.log(boardId, "boardIdboardId");
 
     const { language, labels } = useLanguage();
     const [selectedClass, setSelectedClass] = useState<number | null>(null);
     const [classes, setClasses] = useState<any[]>([]);
+    const userData = useSelector((state: RootState) => state.auth.user);
+    const dispatch = useDispatch();
+
 
     const getClass = async () => {
         try {
@@ -48,12 +58,71 @@ const SelectClass = ({ navigation, route }: Props) => {
     useEffect(() => {
         getClass()
     }, [boardId])
-    const handleContinue = () => {
-        dispatch(setUserData({ classId: selectedClass }));
-        navigation.navigate('Dashboard', {
-            boardId: boardId,
-            classId: selectedClass
-        });
+
+
+    // const handleContinue = async () => {
+    //     try {
+    //         const res = await Post_Api(ApiUrl.ADD_PROFILE, {
+    //             mobile: userData?.mobile,
+    //             boardId: boardId,
+    //             classId: selectedClass,
+    //             language: language,
+    //         });
+    //         console.log(res, "res=====");
+    //         if (res?.status == 201) {
+    //             dispatch(setProfile(res?.data));
+    //             navigation.navigate('Dashboard', {
+    //                 boardId: boardId,
+    //                 classId: selectedClass
+    //             });
+
+
+    //         }
+    //     } catch (error) {
+    //         console.log(error, "error");
+
+    //     }
+
+
+    //     // await AsyncStorage.setItem(STORAGE_KEYS.CLASS, classes.find(c => c._id === selectedClass)?.name || '');
+    //     // await AsyncStorage.setItem(STORAGE_KEYS.CLASSID, selectedClass?.toString() || '');
+    //     // navigation.navigate('Dashboard', {
+    //     //     boardId: boardId,
+    //     //     classId: selectedClass
+    //     // });
+    // };
+
+    const handleContinue = async () => {
+        try {
+            const res = await Post_Api(ApiUrl.ADD_PROFILE, {
+                mobile: userData?.mobile,
+                boardId: boardId,
+                classId: selectedClass,
+                language: language,
+            });
+
+            if (res?.status === 201) {
+
+                const profileRes = await Post_Api(ApiUrl.GET_PROFILE, {
+                    mobile: userData?.mobile,
+                });
+
+                const profile = profileRes?.data;
+                dispatch(setProfile({
+                    mobile: profile.mobile,
+                    boardId: profile.boardId._id,
+                    classId: profile.classId._id,
+                    language: profile.language,
+                    boardName: profile.boardId.name,
+                    className: profile.classId.name,
+                }));
+
+                navigation.navigate('Dashboard');
+
+            }
+        } catch (error) {
+            console.log(error, "error");
+        }
     };
 
     return (
