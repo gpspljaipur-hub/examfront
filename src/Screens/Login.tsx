@@ -60,7 +60,7 @@ const Login = ({ navigation }: any) => {
         catch (error: any) {
             Toast.show({
                 type: 'error',
-                text1: 'API Error',
+                text1: 'Number already registered, please login',
             });
         }
     };

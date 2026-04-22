@@ -152,6 +152,7 @@ const Strings = {
 		LanguagePreference: 'Language Preference',
 		ProfilePrivacyNote: 'Your profile information is used to personalize your learning journey and AI Tutor responses. We never share your contact details.',
 		SaveChanges: 'Save Changes',
+		Logout: 'Logout',
 	},
 	hi: {
 		AppName: 'एग्जामबुक',
@@ -306,6 +307,7 @@ const Strings = {
 		LanguagePreference: 'भाषा प्राथमिकता',
 		ProfilePrivacyNote: 'आपकी प्रोफ़ाइल जानकारी का उपयोग आपकी सीखने की यात्रा और एआई ट्यूटर प्रतिक्रियाओं को व्यक्तिगत बनाने के लिए किया जाता है। हम आपके संपर्क विवरण कभी साझा नहीं करते हैं।',
 		SaveChanges: 'बदलाव सहेजें',
+		Logout: 'लॉगआउट',
 	}
 };
 

@@ -15,8 +15,11 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
 import { useLanguage } from '../context/LanguageContext';
+import { useDispatch } from 'react-redux';
+import { logout } from '../store/slice/authSlice';
 
 const Profile = () => {
+    const dispatch = useDispatch();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -162,6 +165,16 @@ const Profile = () => {
                         <Text style={styles.saveButtonText}>{labels.SaveChanges}</Text>
                     </View>
                 </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.logoutButton}
+                    onPress={() => {
+                        dispatch(logout());
+                        navigation.replace('Login');
+                    }}
+                >
+                    <Text style={styles.logoutButtonText}>{labels.Logout}</Text>
+                </TouchableOpacity>
             </View>
         </ScreenWrapper>
     );
@@ -177,7 +190,6 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        // paddingVertical: HWSize.H_Height20,
     },
     backButton: {
         marginRight: HWSize.W_Width15,
@@ -394,6 +406,21 @@ const styles = StyleSheet.create({
     },
     saveButtonText: {
         color: '#FFF',
+        fontSize: 16,
+        fontFamily: fonts.LexendBold,
+    },
+    logoutButton: {
+        marginTop: 15,
+        height: 55,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1.5,
+        borderColor: '#FF4B4B',
+        backgroundColor: 'transparent',
+    },
+    logoutButtonText: {
+        color: '#FF4B4B',
         fontSize: 16,
         fontFamily: fonts.LexendBold,
     },

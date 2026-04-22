@@ -7,7 +7,11 @@ import MarginHW from '../comman/MarginHW';
 import fonts from '../comman/fonts';
 import HWSize from '../comman/HWSize';
 
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+
 const SplashScreen = ({ navigation }: any) => {
+    const { isLoggedIn, user } = useSelector((state: RootState) => state.auth);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const progressAnim = useRef(new Animated.Value(0)).current;
 
@@ -26,11 +30,18 @@ const SplashScreen = ({ navigation }: any) => {
         }).start();
 
         const timer = setTimeout(() => {
-            navigation.replace('Login');
+            if (isLoggedIn) {
+                navigation.replace('Dashboard', { 
+                    boardId: user?.boardId || 'default', 
+                    classId: user?.classId || 'default' 
+                });
+            } else {
+                navigation.replace('Login');
+            }
         }, 2500);
 
         return () => clearTimeout(timer);
-    }, [fadeAnim, progressAnim, navigation]);
+    }, [fadeAnim, progressAnim, navigation, isLoggedIn]);
 
     const progressWidth = progressAnim.interpolate({
         inputRange: [0, 1],
