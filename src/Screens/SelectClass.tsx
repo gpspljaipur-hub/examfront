@@ -20,9 +20,13 @@ import { useLanguage } from '../context/LanguageContext';
 import { Post_Api } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
 
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../store/slice/authSlice';
+
 type Props = NativeStackScreenProps<RootStackParamList, 'SelectClass'>;
 
 const SelectClass = ({ navigation, route }: Props) => {
+    const dispatch = useDispatch();
     const { boardId } = route.params;
     console.log(boardId, "boardIdboardId");
 
@@ -45,6 +49,7 @@ const SelectClass = ({ navigation, route }: Props) => {
         getClass()
     }, [boardId])
     const handleContinue = () => {
+        dispatch(setUserData({ classId: selectedClass }));
         navigation.navigate('Dashboard', {
             boardId: boardId,
             classId: selectedClass

@@ -21,9 +21,13 @@ import { useLanguage } from '../context/LanguageContext';
 import { Get_Api, GET_API_PUBLIC } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
 
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../store/slice/authSlice';
+
 type Props = NativeStackScreenProps<RootStackParamList, 'SelectBoard'>;
 
 const SelectBoard = ({ navigation }: Props) => {
+    const dispatch = useDispatch();
     const { labels } = useLanguage();
     const [selectedBoard, setSelectedBoard] = useState<string | null>('');
     const [boards, setBoards] = useState<any[]>([]);
@@ -50,6 +54,7 @@ const SelectBoard = ({ navigation }: Props) => {
             return;
         }
 
+        dispatch(setUserData({ boardId: selectedBoard }));
         navigation.navigate('SelectClass', {
             boardId: selectedBoard,
         });
