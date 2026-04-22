@@ -23,7 +23,8 @@ export type RootStackParamList = {
     SelectLanguage: undefined;
     SelectClass: { boardId: string };
     SelectBoard: undefined;
-    Dashboard: { boardId: any, classId: any };
+    // Dashboard: { boardId: any, classId: any };
+    Dashboard: undefined;
     ProgressScreen: undefined;
     AiTutor: undefined;
     Profile: undefined;

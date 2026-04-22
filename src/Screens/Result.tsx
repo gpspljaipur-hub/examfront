@@ -134,7 +134,7 @@ const Result = () => {
         {/* Footer Link */}
         <TouchableOpacity
           style={styles.dashboardLink}
-          onPress={() => navigation.navigate('Dashboard', { boardId: null, classId: null })}
+          onPress={() => navigation.navigate('Dashboard')}
         >
           <Text style={styles.dashboardLinkIcon}>⊞</Text>
           <Text style={styles.dashboardLinkText}>Back to Dashboard</Text>
