@@ -18,6 +18,7 @@ import fonts from '../comman/fonts';
 import ScreenWrapper from '../comman/ScreenWrapper';
 import { useLanguage } from '../context/LanguageContext';
 import BottomTab from '../comman/BottomTab';
+import Header from '../comman/Header';
 import { Post_Api } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
 
@@ -28,7 +29,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Dashboard'>;
 
 const Dashboard = ({ navigation, route }: Props) => {
     const { labels } = useLanguage();
-    const { boardId, classId } = route.params;
+    const boardId = route.params?.boardId;
+    const classId = route.params?.classId;
     const [subjects, setSubjects] = React.useState<any[]>([]);
 
     console.log(boardId, classId, "boardId, classIdboardId, classId");
@@ -133,21 +135,7 @@ const Dashboard = ({ navigation, route }: Props) => {
             <StatusBar barStyle="dark-content" backgroundColor="#FDFBFF" />
 
             {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.userInfo}>
-                    <TouchableOpacity style={styles.avatarContainer} onPress={() => navigation.navigate('Profile')}>
-                        <Image
-                            source={require('../assets/images/ai_tutor_character.png')}
-                            style={styles.avatarImage}
-                        />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>{labels.HeaderTitle}</Text>
-                </View>
-                <TouchableOpacity style={styles.notificationButton}>
-                    <Text style={styles.notificationIcon}>🔔</Text>
-                    <View style={styles.notificationDot} />
-                </TouchableOpacity>
-            </View>
+            <Header />
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 {/* Greeting */}
@@ -259,54 +247,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FDFBFF',
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: MarginHW.PaddingW20,
-        height: 60,
-    },
-    userInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    avatarContainer: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        borderWidth: 1,
-        borderColor: '#E9E7FF',
-        overflow: 'hidden',
-    },
-    avatarImage: {
-        width: '100%',
-        height: '100%',
-    },
-    headerTitle: {
-        fontSize: FontsSize.size18,
-        fontFamily: fonts.LexendBold,
-        color: Colors.background,
-        marginLeft: 10,
-    },
-    notificationButton: {
-        width: 40,
-        height: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    notificationIcon: {
-        fontSize: 22,
-        color: Colors.background,
-    },
-    notificationDot: {
-        position: 'absolute',
-        top: 10,
-        right: 12,
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: Colors.red,
     },
     scrollContent: {
         paddingBottom: 100,

@@ -15,6 +15,7 @@ import Profile from "../Screens/Profile";
 import Question from "../Screens/Question";
 import Result from "../Screens/Result";
 import Solution from "../Screens/Solution";
+import Solutionlist from "../Screens/Solutionlist";
 export type RootStackParamList = {
     SplashScreen: undefined;
     Login: undefined;
@@ -42,6 +43,7 @@ export type RootStackParamList = {
         classId: any
     };
     Solution: { questionIndex?: number, testId: any | null };
+    Solutionlist: undefined;
 };
 
 
@@ -65,6 +67,7 @@ const AppNavigator = () => {
                 <Stack.Screen name="Question" component={Question} />
                 <Stack.Screen name="Result" component={Result} />
                 <Stack.Screen name="Solution" component={Solution} />
+                <Stack.Screen name="Solutionlist" component={Solutionlist} />
             </Stack.Navigator>
         </NavigationContainer>
     );
