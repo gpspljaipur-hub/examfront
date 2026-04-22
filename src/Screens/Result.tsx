@@ -24,13 +24,13 @@ const Result = () => {
     score,
     correctAnswers,
     incorrectAnswers,
-    timeTaken,
     subjectId,
     boardId,
-    classId
+    classId,
+    timeTaken, testId
   } = route.params;
 
-  console.log(resultData, "resultDataresultDataresultDataresultData");
+  console.log(testId, "resultDataresultDataresultDataresultData");
 
 
   const stats = [
@@ -110,21 +110,21 @@ const Result = () => {
             You're doing well! Would you like to see a personalized breakdown of your mistakes?"
           </Text>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.aiButtonPrimary}
-            onPress={() => navigation.navigate('Solution', { questionIndex: 0 })}
+            onPress={() => navigation.navigate('Solution', { questionIndex: 0, testId: testId })}
           >
             <Text style={styles.aiButtonTextPrimary}>💬 View Solution & Analysis</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.aiButtonSecondary}
-            onPress={() => navigation.navigate('Question', { 
-              chapterId, 
-              chapterTitle, 
-              subjectId, 
-              boardId, 
-              classId 
+            onPress={() => navigation.navigate('Question', {
+              chapterId,
+              chapterTitle,
+              subjectId,
+              boardId,
+              classId
             })}
           >
             <Text style={styles.aiButtonTextSecondary}>Retake Test</Text>

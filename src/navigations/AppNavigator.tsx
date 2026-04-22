@@ -31,6 +31,7 @@ export type RootStackParamList = {
     Result: {
         chapterId: string,
         chapterTitle: string,
+        testId: string | null,
         score: number,
         correctAnswers: number,
         incorrectAnswers: number,
@@ -40,7 +41,7 @@ export type RootStackParamList = {
         boardId: any,
         classId: any
     };
-    Solution: { questionIndex?: number };
+    Solution: { questionIndex?: number, testId: any | null };
 };
 
 

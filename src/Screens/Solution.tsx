@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     Text,
@@ -15,19 +15,62 @@ import { RootStackParamList } from '../navigations/AppNavigator';
 import ScreenWrapper from '../comman/ScreenWrapper';
 import HWSize from '../comman/HWSize';
 import fonts from '../comman/fonts';
-import { questionData } from '../data/QuestionData';
+import { questionData, QuestionType } from '../data/QuestionData';
+import { Post_Api } from '../userApi/Request';
+import ApiUrl from '../userApi/ApiUrl';
 
 const { width } = Dimensions.get('window');
 
-const Solution = () => {
+const Solution = ({ route }: { route: { params: { testId: string } } }) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = React.useRef<FlatList>(null);
+    const { testId } = route.params;
+    const [questionsData, setQuestionData] = useState<QuestionType[]>([]);
 
-    const question = questionData[currentIndex];
+
+
+    const question = questionsData[currentIndex];
+
+    const transformQuestions = (data: any[]): QuestionType[] => {
+        return data.map((item, index) => ({
+            id: item._id,
+            questionText: item?.question,
+
+            options: item?.options?.map((opt: string) => {
+                const [id, ...textParts] = opt.split('.');
+                return {
+                    id: id?.trim(),
+                    text: textParts?.join('.').trim(),
+                };
+            }),
+
+            correctAnswer: item.correctAnswer,
+            type: "Multiple Choice",
+            points: 1,
+            hint: item?.explanation || "",
+            solution: item?.explanation || "",
+        }));
+    };
+
+    useEffect(() => {
+        fetchQuestions()
+    }, [])
+    const fetchQuestions = async () => {
+        try {
+            const res = await Post_Api(ApiUrl?.GET_SOLUTIONS, {
+                testId: testId,
+            });
+
+            console.log("FULL RESPONSE=========:", res.data)
+            setQuestionData(transformQuestions(res?.data));
+        } catch (error) {
+            console.log(error, "error");
+        }
+    };
 
     React.useEffect(() => {
-        if (flatListRef.current && questionData.length > 0) {
+        if (flatListRef.current && questionsData.length > 0) {
             flatListRef.current.scrollToIndex({
                 index: currentIndex,
                 animated: true,
@@ -37,7 +80,7 @@ const Solution = () => {
     }, [currentIndex]);
 
     const handleNext = () => {
-        if (currentIndex < questionData.length - 1) {
+        if (currentIndex < questionsData.length - 1) {
             setCurrentIndex(currentIndex + 1);
         }
     };
@@ -54,7 +97,7 @@ const Solution = () => {
             <ScreenWrapper style={styles.container}>
                 {/* Header */}
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <TouchableOpacity onPress={() => navigation?.goBack()} style={styles.backButton}>
                         <Text style={styles.backIcon}>←</Text>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Solution Analysis</Text>
@@ -63,8 +106,8 @@ const Solution = () => {
                 {/* Question Plate */}
                 <View style={styles.plateWrapper}>
                     <FlatList
-                        data={questionData}
-                        keyExtractor={(_, index) => index.toString()}
+                        data={questionsData}
+                        keyExtractor={(_, index) => index?.toString()}
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.plateContent}
@@ -104,17 +147,17 @@ const Solution = () => {
                             </View>
                         </View>
 
-                        <Text style={styles.questionText}>{question.questionText}</Text>
+                        <Text style={styles.questionText}>{question?.questionText}</Text>
 
-                        {question.equation && (
+                        {question?.equation && (
                             <View style={styles.equationContainer}>
-                                <Text style={styles.equationText}>{question.equation}</Text>
+                                <Text style={styles.equationText}>{question?.equation}</Text>
                             </View>
                         )}
 
                         {/* Options */}
                         <View style={styles.optionsContainer}>
-                            {question.options.map((option) => (
+                            {question?.options?.map((option) => (
                                 <View
                                     key={option.id}
                                     style={[
@@ -128,12 +171,12 @@ const Solution = () => {
                                     ]}>
                                         <Text style={[
                                             styles.optionLetterText,
-                                            question.correctAnswer === option.id && styles.correctOptionLetterText
+                                            question?.correctAnswer === option.id && styles.correctOptionLetterText
                                         ]}>{option.id}</Text>
                                     </View>
                                     <Text style={[
                                         styles.optionText,
-                                        question.correctAnswer === option.id && styles.correctOptionText
+                                        question?.correctAnswer === option.id && styles.correctOptionText
                                     ]}>{option.text}</Text>
                                     {question.correctAnswer === option.id && (
                                         <Text style={styles.checkIcon}>✓</Text>
@@ -166,7 +209,7 @@ const Solution = () => {
 
                     <TouchableOpacity
                         style={[styles.navButton, styles.nextButton, currentIndex === questionData.length - 1 && styles.finishButton]}
-                        onPress={currentIndex === questionData.length - 1 ? () => navigation.navigate('Dashboard', { boardId: null, classId: null }) : handleNext}
+                        onPress={currentIndex === questionData.length - 1 ? () => navigation?.navigate('Dashboard', { boardId: null, classId: null }) : handleNext}
                     >
                         <Text style={styles.navButtonText}>
                             {currentIndex === questionData.length - 1 ? 'Finish Review' : 'Next Solution'}
