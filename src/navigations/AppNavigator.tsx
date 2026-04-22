@@ -41,7 +41,7 @@ export type RootStackParamList = {
         boardId: any,
         classId: any
     };
-    Solution: { questionIndex?: number };
+    Solution: { questionIndex?: number, testId: any | null };
 };
 
 

@@ -26,7 +26,11 @@ import { useLanguage } from '../context/LanguageContext';
 import { Post_Api } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
 
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../store/slice/authSlice';
+
 const OTPScreen = ({ navigation, route }: any) => {
+    const dispatch = useDispatch();
     const { labels, language } = useLanguage();
     const { mobile, otpValue } = route.params;
     const [otp, setOtp] = useState(['', '', '', '']);
@@ -128,7 +132,19 @@ const OTPScreen = ({ navigation, route }: any) => {
                     text1: res?.data?.message || 'OTP Verified',
                 });
 
-                navigation.navigate('SelectLanguage');
+                const user = res?.data?.user;
+                dispatch(loginSuccess({ 
+                    mobile,
+                    ...user 
+                }));
+                if (user?.boardId && user?.classId) {
+                    navigation.replace('Dashboard', { 
+                        boardId: user.boardId, 
+                        classId: user.classId 
+                    });
+                } else {
+                    navigation.navigate('SelectLanguage');
+                }
             } else {
                 Toast.show({
                     type: 'error',

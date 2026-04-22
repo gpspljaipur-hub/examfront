@@ -112,7 +112,7 @@ const Result = () => {
 
           <TouchableOpacity
             style={styles.aiButtonPrimary}
-            onPress={() => navigation.navigate('Solution', { questionIndex: 0 })}
+            onPress={() => navigation.navigate('Solution', { questionIndex: 0, testId: testId })}
           >
             <Text style={styles.aiButtonTextPrimary}>💬 View Solution & Analysis</Text>
           </TouchableOpacity>

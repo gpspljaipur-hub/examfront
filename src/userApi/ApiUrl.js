@@ -7,6 +7,7 @@ const ApiUrl = {
   GET_SUBJECT: '/subjects/get-subject',
   GET_CHAPTER: '/chapters/get-chapter',
   GET_QUESTION: '/ai/generate-questions',
+  GET_SOLUTIONS: '/questions/get-by-test',
 };
 
 export default ApiUrl;
