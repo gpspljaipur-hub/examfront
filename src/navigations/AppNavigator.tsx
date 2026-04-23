@@ -29,7 +29,7 @@ export type RootStackParamList = {
     AiTutor: undefined;
     Profile: undefined;
     Question: { chapterId: string; chapterTitle: string, subjectId: any, boardId: any, classId: any };
-    SyllabusList: { subjectId?: any, boardId: any, classId: any };
+    SyllabusList: { subjectId?: any, boardId: any, classId: any, subjectName?: string };
     Result: {
         chapterId: string,
         chapterTitle: string,

@@ -20,7 +20,7 @@ import ApiUrl from '../userApi/ApiUrl';
 type Props = NativeStackScreenProps<RootStackParamList, 'SyllabusList'>;
 
 const SyllabusList = ({ navigation, route }: Props) => {
-    const { subjectId, boardId, classId } = route.params || {};
+    const { subjectName, subjectId, boardId, classId } = route.params || {};
     const [syllabusData, setSyllabusData] = useState<any[]>([]);
     const getChapters = async () => {
         try {
@@ -48,7 +48,7 @@ const SyllabusList = ({ navigation, route }: Props) => {
             console.log(error);
         }
     };
-    
+
     useEffect(() => {
         getChapters()
     }, [subjectId, boardId])
@@ -93,7 +93,7 @@ const SyllabusList = ({ navigation, route }: Props) => {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Text style={styles.backIcon}>←</Text>
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>{subjectId}</Text>
+                <Text style={styles.headerTitle}>{subjectName}</Text>
                 <View style={{ width: 40 }} />
             </View>
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>

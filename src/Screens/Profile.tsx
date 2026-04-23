@@ -29,6 +29,7 @@ const Profile = () => {
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedBoard, setSelectedBoard] = useState('');
     const { language, setLanguage, labels } = useLanguage();
+    const userData = useSelector((state: RootState) => state.auth.user);
     const profile = useSelector((state: RootState) => state.profile);
 
     useEffect(() => {
