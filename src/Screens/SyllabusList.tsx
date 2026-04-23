@@ -54,7 +54,7 @@ const SyllabusList = ({ navigation, route }: Props) => {
     }, [subjectId, boardId])
 
 
-
+    
     const renderChapter = ({ item }: { item: any }) => (
         <TouchableOpacity
             style={styles.chapterCard}
