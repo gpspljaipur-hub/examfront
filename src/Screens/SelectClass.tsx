@@ -35,8 +35,6 @@ const STORAGE_KEYS = {
 
 const SelectClass = ({ navigation, route }: Props) => {
     const { boardId } = route.params;
-    console.log(boardId, "boardIdboardId");
-
     const { language, labels } = useLanguage();
     const [selectedClass, setSelectedClass] = useState<number | null>(null);
     const [classes, setClasses] = useState<any[]>([]);

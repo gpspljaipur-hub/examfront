@@ -33,6 +33,8 @@ const Dashboard = ({ navigation, route }: Props) => {
     const { labels } = useLanguage();
     const [subjects, setSubjects] = React.useState<any[]>([]);
     const profile = useSelector((state: RootState) => state.profile);
+    console.log(profile, "profileprofileprofileprofileprofile");
+
 
     const getIcon = (name: any) => {
         const n = name.toLowerCase();

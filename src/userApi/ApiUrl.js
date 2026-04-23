@@ -11,6 +11,7 @@ const ApiUrl = {
   ADD_PROFILE: '/profile/save',
   GET_PROFILE: '/profile/get',
   AI_CHAT_QUESTIONS: '/chat/chat-question',
+  AI_CHAPTER_SUMMARY: '/chapter-ai/generate',
 };
 
 export default ApiUrl;

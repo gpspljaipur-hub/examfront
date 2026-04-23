@@ -1,0 +1,272 @@
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    TextInput,
+    Image,
+    ScrollView,
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import ScreenWrapper from '../comman/ScreenWrapper';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigations/AppNavigator';
+import { useLanguage } from '../context/LanguageContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../store/slice/authSlice';
+import { RootState } from '../store/store';
+import { GET_API_PUBLIC, Post_Api } from '../userApi/Request';
+import ApiUrl from '../userApi/ApiUrl';
+import { setProfile } from '../store/slice/profileSlice';
+import Toast from 'react-native-toast-message';
+
+const Profile = () => {
+    const dispatch = useDispatch();
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+    const { language, setLanguage } = useLanguage();
+    const userData = useSelector((state: RootState) => state.auth.user);
+    const profile = useSelector((state: RootState) => state.profile);
+
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [mobile, setMobile] = useState('');
+
+    const [boards, setBoards] = useState<any[]>([]);
+    const [classes, setClasses] = useState<any[]>([]);
+
+    const [selectedBoard, setSelectedBoard] = useState({ id: '', name: '' });
+    const [selectedClass, setSelectedClass] = useState({ id: '', name: '' });
+
+    const [showBoardDropdown, setShowBoardDropdown] = useState(false);
+    const [showClassDropdown, setShowClassDropdown] = useState(false);
+
+    // default values
+    useEffect(() => {
+        if (profile) {
+            setFullName(profile.fullName || '');
+            setEmail(profile.email || '');
+            setMobile(profile.mobile || '');
+        }
+    }, [profile]);
+
+    const fetchBoards = async () => {
+        const res = await GET_API_PUBLIC(ApiUrl.GET_BOARDS);
+        setBoards(res?.data || []);
+    };
+
+    const fetchClasses = async (boardId: string) => {
+        const res = await Post_Api(ApiUrl.GET_CLASSES, { boardId });
+        setClasses(res?.data || []);
+    };
+
+    useEffect(() => {
+        fetchBoards();
+    }, []);
+
+    useEffect(() => {
+        if (boards.length && profile?.boardId) {
+            const b = boards.find(i => i._id === profile.boardId);
+            if (b) setSelectedBoard({ id: b._id, name: b.name });
+        }
+    }, [boards]);
+
+    useEffect(() => {
+        if (selectedBoard.id) fetchClasses(selectedBoard.id);
+    }, [selectedBoard.id]);
+
+    useEffect(() => {
+        if (classes.length && profile?.classId) {
+            const c = classes.find(i => i._id === profile.classId);
+            if (c) setSelectedClass({ id: c._id, name: c.name });
+        }
+    }, [classes]);
+
+    const handleSubmit = async () => {
+        const res = await Post_Api(ApiUrl.ADD_PROFILE, {
+            fullName,
+            email,
+            mobile,
+            boardId: selectedBoard.id,
+            classId: selectedClass.id,
+            language
+        });
+
+        if (res?.status === 201) {
+            const profileRes = await Post_Api(ApiUrl.GET_PROFILE, {
+                mobile: userData?.mobile,
+            });
+
+            const newProfile = profileRes?.data;
+
+            dispatch(setProfile({
+                fullName: newProfile.fullName,
+                email: newProfile.email,
+                mobile: newProfile.mobile,
+                boardId: newProfile.boardId._id,
+                classId: newProfile.classId._id,
+                language: newProfile.language,
+                boardName: newProfile.boardId.name,
+                className: newProfile.classId.name,
+            }));
+
+            Toast.show({ type: 'success', text1: 'Profile Updated' });
+            navigation.navigate('Dashboard');
+        }
+    };
+
+    return (
+        <ScreenWrapper style={styles.container}>
+
+            {/* INPUTS */}
+            <Text style={styles.label}>Full Name</Text>
+            <TextInput style={styles.input} value={fullName} onChangeText={setFullName} />
+
+            <Text style={styles.label}>Email</Text>
+            <TextInput style={styles.input} value={email} onChangeText={setEmail} />
+
+            <Text style={styles.label}>Mobile</Text>
+            <TextInput style={styles.input} value={mobile} onChangeText={setMobile} />
+
+            {/* BOARD */}
+            <Text style={styles.label}>Board</Text>
+            <TouchableOpacity style={styles.dropdown} onPress={() => setShowBoardDropdown(!showBoardDropdown)}>
+                <Text>{selectedBoard.name || 'Select Board'}</Text>
+            </TouchableOpacity>
+
+            {showBoardDropdown && (
+                <View style={styles.dropdownList}>
+                    <ScrollView>
+                        {boards.map(item => (
+                            <TouchableOpacity key={item._id}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                    const newBoard = { id: item._id, name: item.name };
+                                    setSelectedBoard(newBoard);
+                                    setSelectedClass({ id: '', name: '' });
+                                    fetchClasses(newBoard.id);
+                                    setShowBoardDropdown(false);
+                                }}>
+                                <Text style={[
+                                    styles.dropdownText,
+                                    selectedBoard.id === item._id && styles.selectedText
+                                ]}>
+                                    {item.name}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                </View>
+            )}
+
+            {/* CLASS */}
+            <Text style={styles.label}>Class</Text>
+            <TouchableOpacity
+                style={styles.dropdown}
+                onPress={() => setShowClassDropdown(!showClassDropdown)}
+                disabled={!selectedBoard.id}
+            >
+                <Text>{selectedClass.name || 'Select Class'}</Text>
+            </TouchableOpacity>
+
+            {showClassDropdown && (
+                <View style={styles.dropdownList}>
+                    <ScrollView>
+                        {classes.map(item => (
+                            <TouchableOpacity key={item._id}
+                                style={styles.dropdownItem}
+                                onPress={() => {
+                                    setSelectedClass({ id: item._id, name: item.name });
+                                    setShowClassDropdown(false);
+                                }}>
+                                <Text style={[
+                                    styles.dropdownText,
+                                    selectedClass.id === item._id && styles.selectedText
+                                ]}>
+                                    {item.name}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                </View>
+            )}
+
+            {/* SAVE */}
+            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.buttonText}>Save</Text>
+            </TouchableOpacity>
+
+        </ScreenWrapper>
+    );
+};
+
+export default Profile;
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#F8F7FF',
+    },
+
+    label: {
+        fontSize: 14,
+        marginBottom: 6,
+        color: '#666',
+    },
+
+    input: {
+        backgroundColor: '#fff',
+        padding: 12,
+        borderRadius: 10,
+        marginBottom: 15,
+        borderWidth: 1,
+        borderColor: '#ddd',
+    },
+
+    dropdown: {
+        backgroundColor: '#fff',
+        padding: 12,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#ddd',
+    },
+
+    dropdownList: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        marginTop: 5,
+        maxHeight: 200,
+        borderWidth: 1,
+        borderColor: '#ddd',
+    },
+
+    dropdownItem: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderColor: '#eee',
+    },
+
+    dropdownText: {
+        fontSize: 14,
+        color: '#333',
+    },
+
+    selectedText: {
+        color: '#6E5CE8',
+        fontWeight: 'bold',
+    },
+
+    button: {
+        marginTop: 20,
+        backgroundColor: '#6E5CE8',
+        padding: 15,
+        borderRadius: 25,
+        alignItems: 'center',
+    },
+
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+});

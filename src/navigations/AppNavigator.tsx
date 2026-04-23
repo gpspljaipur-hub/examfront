@@ -46,7 +46,7 @@ export type RootStackParamList = {
     };
     Solution: { questionIndex?: number, testId: any | null };
     Solutionlist: undefined;
-    DetailPage: undefined;
+    DetailPage: { chapterId: string; chapterTitle: string, subjectId: any, boardId: any, classId: any };
 };
 
 

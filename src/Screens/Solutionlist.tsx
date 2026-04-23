@@ -62,7 +62,7 @@ const Solutionlist = ({ navigation, route }: Props) => {
     };
     useEffect(() => {
         getSubjects()
-    }, [profile?.boardId, profile?.classId])
+    }, [profile?.classId])
     return (
         <ScreenWrapper>
             <Header />
