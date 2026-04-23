@@ -169,7 +169,7 @@ const Dashboard = ({ navigation, route }: Props) => {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
                     {subjects.map((subject) => (
                         <TouchableOpacity key={subject.id} style={styles.subjectCard}
-                            onPress={() => navigation.navigate('SyllabusList', { subjectId: subject.id, boardId: profile?.boardId, classId: profile?.classId, subjectName: subject.title })}
+                            onPress={() => navigation.navigate('SyllabusList', { subjectId: subject.id, boardId: profile?.boardId, classId: profile?.classId, subjectName: subject.title, nextScreen: 'Question' })}
                         >
                             <View style={[styles.subjectIconContainer, { backgroundColor: subject.color }]}>
                                 <Text style={styles.subjectIcon}>{subject.icon}</Text>

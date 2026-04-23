@@ -16,6 +16,7 @@ import Question from "../Screens/Question";
 import Result from "../Screens/Result";
 import Solution from "../Screens/Solution";
 import Solutionlist from "../Screens/Solutionlist";
+import Detail from "../Screens/Detail";
 export type RootStackParamList = {
     SplashScreen: undefined;
     Login: undefined;
@@ -29,7 +30,7 @@ export type RootStackParamList = {
     AiTutor: undefined;
     Profile: undefined;
     Question: { chapterId: string; chapterTitle: string, subjectId: any, boardId: any, classId: any };
-    SyllabusList: { subjectId?: any, boardId: any, classId: any, subjectName?: string };
+    SyllabusList: { subjectId?: any, boardId: any, classId: any, subjectName?: string, nextScreen?: keyof RootStackParamList | string };
     Result: {
         chapterId: string,
         chapterTitle: string,
@@ -45,6 +46,7 @@ export type RootStackParamList = {
     };
     Solution: { questionIndex?: number, testId: any | null };
     Solutionlist: undefined;
+    DetailPage: undefined;
 };
 
 
@@ -69,6 +71,7 @@ const AppNavigator = () => {
                 <Stack.Screen name="Result" component={Result} />
                 <Stack.Screen name="Solution" component={Solution} />
                 <Stack.Screen name="Solutionlist" component={Solutionlist} />
+                <Stack.Screen name="DetailPage" component={Detail} />
             </Stack.Navigator>
         </NavigationContainer>
     );
