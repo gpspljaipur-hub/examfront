@@ -19,6 +19,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slice/authSlice';
 import { RootState } from '../store/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GET_API_PUBLIC, Post_Api } from '../userApi/Request';
+import ApiUrl from '../userApi/ApiUrl';
+import { setProfile } from '../store/slice/profileSlice';
+import Toast from 'react-native-toast-message';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -26,21 +30,99 @@ const Profile = () => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [mobile, setMobile] = useState('');
-    const [selectedClass, setSelectedClass] = useState('');
-    const [selectedBoard, setSelectedBoard] = useState('');
     const { language, setLanguage, labels } = useLanguage();
     const userData = useSelector((state: RootState) => state.auth.user);
     const profile = useSelector((state: RootState) => state.profile);
+    const [boards, setBoards] = useState<any[]>([]);
+    const [classes, setClasses] = useState<any[]>([]);
+    const [selectedBoard, setSelectedBoard] = useState({
+        id: '',
+        name: ''
+    });
+
+    const [selectedClass, setSelectedClass] = useState({
+        id: '',
+        name: ''
+    });
+
+    const [showBoardDropdown, setShowBoardDropdown] = useState(false);
+    const [showClassDropdown, setShowClassDropdown] = useState(false);
 
     useEffect(() => {
         if (profile) {
             setFullName(profile.fullName || '');
             setEmail(profile.email || '');
             setMobile(profile.mobile || '');
-            setSelectedBoard(profile.boardName || '');
-            setSelectedClass(profile.className || '');
         }
     }, [profile]);
+    useEffect(() => {
+        if (boards.length && profile?.boardId) {
+            const b = boards.find(i => i._id === profile.boardId);
+            if (b) setSelectedBoard({ id: b._id, name: b.name });
+        }
+    }, [boards]);
+
+    useEffect(() => {
+        if (selectedBoard.id) fetchClasses(selectedBoard.id);
+    }, [selectedBoard.id]);
+
+    useEffect(() => {
+        if (classes.length && profile?.classId) {
+            const c = classes.find(i => i._id === profile.classId);
+            if (c) setSelectedClass({ id: c._id, name: c.name });
+        }
+    }, [classes]);
+
+
+    useEffect(() => {
+        fetchBoards();
+    }, []);
+
+
+    const fetchBoards = async () => {
+        const res = await GET_API_PUBLIC(ApiUrl.GET_BOARDS);
+        setBoards(res?.data || []);
+    };
+
+    const fetchClasses = async (boardId: string) => {
+        const res = await Post_Api(ApiUrl.GET_CLASSES, { boardId });
+        setClasses(res?.data || []);
+    };
+
+    const handleSubmit = async () => {
+        const res = await Post_Api(ApiUrl.ADD_PROFILE, {
+            fullName,
+            email,
+            mobile,
+            boardId: selectedBoard.id,
+            classId: selectedClass.id,
+            language
+        });
+
+        if (res?.status === 201) {
+            const profileRes = await Post_Api(ApiUrl.GET_PROFILE, {
+                mobile: userData?.mobile,
+            });
+
+            const newProfile = profileRes?.data;
+
+            dispatch(setProfile({
+                fullName: newProfile.fullName,
+                email: newProfile.email,
+                mobile: newProfile.mobile,
+                boardId: newProfile.boardId._id,
+                classId: newProfile.classId._id,
+                language: newProfile.language,
+                boardName: newProfile.boardId.name,
+                className: newProfile.classId.name,
+            }));
+
+            Toast.show({ type: 'success', text1: 'Profile Updated' });
+            navigation.navigate('Dashboard');
+        }
+    };
+
+
 
     return (
         <ScreenWrapper style={styles.container}>
@@ -116,25 +198,111 @@ const Profile = () => {
                 {/* Educational Board Dropdown */}
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>{labels.EducationalBoard}</Text>
+
                     <TouchableOpacity
                         style={styles.dropdown}
-                        onPress={() => navigation.navigate('SelectBoard')}
+                        onPress={() => setShowBoardDropdown(!showBoardDropdown)}
                     >
-                        <Text style={styles.dropdownText}>{selectedBoard || 'Select Board'}</Text>
-                        <Text style={styles.dropdownIcon}>⌄</Text>
+                        <Text style={styles.dropdownText}>
+                            {selectedBoard.name || 'Select Board'}
+                        </Text>
+                        <Text style={styles.dropdownIcon}>
+                            {showBoardDropdown ? '⌃' : '⌄'}
+                        </Text>
                     </TouchableOpacity>
+
+                    {showBoardDropdown && (
+                        <View style={{
+                            backgroundColor: '#fff',
+                            borderRadius: 10,
+                            marginTop: 5,
+                            maxHeight: 200,
+                            borderWidth: 1,
+                            borderColor: '#eee'
+                        }}>
+                            <ScrollView nestedScrollEnabled>
+                                {boards.map((item) => (
+                                    <TouchableOpacity
+                                        key={item._id}
+                                        style={{
+                                            padding: 12,
+                                            borderBottomWidth: 1,
+                                            borderColor: '#eee'
+                                        }}
+                                        onPress={() => {
+                                            const newBoard = { id: item._id, name: item.name };
+                                            setSelectedBoard(newBoard);
+                                            setSelectedClass({ id: '', name: '' });
+                                            fetchClasses(newBoard.id);
+                                            setShowBoardDropdown(false);
+                                        }}
+                                    >
+                                        <Text style={{
+                                            fontSize: 15,
+                                            color: selectedBoard.id === item._id ? '#6E5CE8' : '#000',
+                                            fontWeight: selectedBoard.id === item._id ? 'bold' : 'normal'
+                                        }}>
+                                            {item.name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    )}
                 </View>
 
                 {/* Class Selection */}
                 <View style={styles.inputGroup}>
                     <Text style={styles.label}>{labels.CurrentClass}</Text>
+
                     <TouchableOpacity
                         style={styles.dropdown}
-                        onPress={() => navigation.navigate('SelectClass', { boardId: 'default' })}
+                        onPress={() => setShowClassDropdown(!showClassDropdown)}
+                        disabled={!selectedBoard.id} // 👈 important
                     >
-                        <Text style={styles.dropdownText}>{selectedClass || 'Select Class'}</Text>
-                        <Text style={styles.dropdownIcon}>⌄</Text>
+                        <Text style={styles.dropdownText}>
+                            {selectedClass.name || 'Select Class'}
+                        </Text>
+                        <Text style={styles.dropdownIcon}>
+                            {showClassDropdown ? '⌃' : '⌄'}
+                        </Text>
                     </TouchableOpacity>
+
+                    {showClassDropdown && (
+                        <View style={{
+                            backgroundColor: '#fff',
+                            borderRadius: 10,
+                            marginTop: 5,
+                            maxHeight: 200,
+                            borderWidth: 1,
+                            borderColor: '#eee'
+                        }}>
+                            <ScrollView nestedScrollEnabled>
+                                {classes.map((item) => (
+                                    <TouchableOpacity
+                                        key={item._id}
+                                        style={{
+                                            padding: 12,
+                                            borderBottomWidth: 1,
+                                            borderColor: '#eee'
+                                        }}
+                                        onPress={() => {
+                                            setSelectedClass({ id: item._id, name: item.name });
+                                            setShowClassDropdown(false);
+                                        }}
+                                    >
+                                        <Text style={{
+                                            fontSize: 15,
+                                            color: selectedClass.id === item._id ? '#6E5CE8' : '#000',
+                                            fontWeight: selectedClass.id === item._id ? 'bold' : 'normal'
+                                        }}>
+                                            {item.name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    )}
                 </View>
 
 
@@ -171,7 +339,9 @@ const Profile = () => {
 
             {/* Save Changes Button */}
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.saveButton}>
+                <TouchableOpacity style={styles.saveButton}
+                    onPress={() => handleSubmit()}
+                >
                     <View style={styles.buttonContent}>
                         <View style={styles.checkIconWrapper}>
                             <Text style={styles.checkIcon}>✓</Text>
