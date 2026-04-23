@@ -52,7 +52,7 @@ const SyllabusList = ({ navigation, route }: Props) => {
     useEffect(() => {
         getChapters()
     }, [subjectId, boardId])
-
+    console.log(syllabusData, "syllabusData");
 
 
     const renderChapter = ({ item }: { item: any }) => (
