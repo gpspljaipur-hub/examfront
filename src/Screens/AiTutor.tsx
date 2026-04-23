@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     StyleSheet,
     Text,
@@ -9,40 +9,66 @@ import {
     Image,
 } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { Post_Api } from '../userApi/Request';
+import ApiUrl from '../userApi/ApiUrl';
+import Markdown from 'react-native-markdown-display';
 
 interface Message {
     id: string;
     text: string;
-    sender: string;
+    sender: 'user' | 'ai';
 }
 
 const AiTutor = () => {
     const [message, setMessage] = useState('');
     const [chat, setChat] = useState<Message[]>([]);
+    const [loading, setLoading] = useState(false);
+    const flatListRef = useRef<FlatList>(null);
+    const userData = useSelector((state: RootState) => state.auth.user);
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!message.trim()) return;
-
-        const userMsg = {
+        const userMsg: Message = {
             id: Date.now().toString(),
             text: message,
             sender: 'user',
         };
 
-        // Dummy AI response
-        const aiMsg = {
-            id: (Date.now() + 1).toString(),
-            text: "🤖 This is a dummy AI response. I'll help you with this soon!",
-            sender: 'ai',
-        };
-
-        setChat(prev => [...prev, userMsg, aiMsg]);
+        setChat(prev => [...prev, userMsg]);
         setMessage('');
+        setLoading(true);
+
+        try {
+            const res = await Post_Api(ApiUrl.AI_CHAT_QUESTIONS, {
+                userId: userData?._id,
+                question: message,
+            });
+
+            const aiMsg: Message = {
+                id: (Date.now() + 1).toString(),
+                text: res?.data?.answer || "🤖 No response",
+                sender: 'ai',
+            };
+
+            setChat(prev => [...prev, aiMsg]);
+
+        } catch (error) {
+            setChat(prev => [
+                ...prev,
+                {
+                    id: (Date.now() + 2).toString(),
+                    text: "Something went wrong",
+                    sender: 'ai',
+                },
+            ]);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const renderItem = ({ item }: { item: Message }) => {
-        if (!item) return null;
-
         const isUser = item.sender === 'user';
 
         return (
@@ -52,50 +78,70 @@ const AiTutor = () => {
                     isUser ? styles.userBubble : styles.aiBubble,
                 ]}
             >
-                <Text style={[styles.messageText, isUser && { color: '#fff' }]}>{item.text}</Text>
+                <Markdown
+                    style={{
+                        body: {
+                            color: isUser ? '#fff' : '#000',
+                            fontSize: 14,
+                        },
+                    }}
+                >
+                    {item.text}
+                </Markdown>
             </View>
         );
     };
 
     return (
         <View style={styles.container}>
+
+            {/* Background */}
             <Image
                 source={require('../assets/images/splash_character.png')}
                 style={styles.backgroundImage}
             />
 
-            {/* HEADER */}
+            {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.headerLeft}>Ask AI Tutor</Text>
                 <Text style={styles.headerRight}>EduAI</Text>
             </View>
 
-            {/* CHAT AREA */}
+            {/* Chat */}
             <FlatList
+                ref={flatListRef}
                 data={chat}
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
-                contentContainerStyle={{ padding: 16 }}
+                contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
+                onContentSizeChange={() =>
+                    flatListRef.current?.scrollToEnd({ animated: true })
+                }
             />
 
-            {/* INPUT AREA */}
+            {/* Typing Loader */}
+            {loading && (
+                <View style={[styles.messageBubble, styles.aiBubble, { marginHorizontal: 16 }]}>
+                    <Text>Typing...</Text>
+                </View>
+            )}
+
+            {/* Input */}
             <View style={styles.inputContainer}>
 
-                {/* Attach Icon */}
                 <TouchableOpacity style={styles.iconBtn}>
                     <Ionicons name="attach" size={22} color="#666" />
                 </TouchableOpacity>
 
-                {/* Text Input */}
                 <TextInput
                     style={styles.input}
                     placeholder="Ask anything..."
                     placeholderTextColor="#999"
                     value={message}
                     onChangeText={setMessage}
+                    onSubmitEditing={handleSend}
                 />
 
-                {/* Send Button */}
                 <TouchableOpacity style={styles.sendBtn} onPress={handleSend}>
                     <Ionicons name="send" size={18} color="#fff" />
                 </TouchableOpacity>
@@ -118,10 +164,9 @@ const styles = StyleSheet.create({
         height: 300,
         top: '30%',
         alignSelf: 'center',
-        opacity: 0.5
+        opacity: 0.5,
     },
 
-    /* HEADER */
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -138,7 +183,6 @@ const styles = StyleSheet.create({
         color: '#6C63FF',
     },
 
-    /* CHAT */
     messageBubble: {
         maxWidth: '75%',
         padding: 12,
@@ -153,11 +197,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#E5E5EA',
         alignSelf: 'flex-start',
     },
-    messageText: {
-        color: '#000',
-    },
 
-    /* INPUT */
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
