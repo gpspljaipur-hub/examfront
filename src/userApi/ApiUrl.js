@@ -8,6 +8,9 @@ const ApiUrl = {
   GET_CHAPTER: '/chapters/get-chapter',
   GET_QUESTION: '/ai/generate-questions',
   GET_SOLUTIONS: '/questions/get-by-test',
+  ADD_PROFILE: '/profile/save',
+  GET_PROFILE: '/profile/get',
+  AI_CHAT_QUESTIONS: '/chat/chat-question',
 };
 
 export default ApiUrl;

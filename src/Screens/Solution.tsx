@@ -18,6 +18,8 @@ import fonts from '../comman/fonts';
 import { questionData, QuestionType } from '../data/QuestionData';
 import { Post_Api } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 const { width } = Dimensions.get('window');
 
@@ -27,6 +29,7 @@ const Solution = ({ route }: { route: { params: { testId: string } } }) => {
     const flatListRef = React.useRef<FlatList>(null);
     const { testId } = route.params;
     const [questionsData, setQuestionData] = useState<QuestionType[]>([]);
+    const answers = useSelector((state: RootState) => state.test.answers);
 
 
 
@@ -61,8 +64,6 @@ const Solution = ({ route }: { route: { params: { testId: string } } }) => {
             const res = await Post_Api(ApiUrl?.GET_SOLUTIONS, {
                 testId: testId,
             });
-
-            console.log("FULL RESPONSE=========:", res.data)
             setQuestionData(transformQuestions(res?.data));
         } catch (error) {
             console.log(error, "error");
@@ -140,10 +141,10 @@ const Solution = ({ route }: { route: { params: { testId: string } } }) => {
                 </View>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                     {/* Question Card */}
-                    <View style={styles.solutionCard}>
-                        <View style={styles.questionHeader}>
-                            <View style={styles.questionNumberBadge}>
-                                <Text style={styles.questionNumberText}>QUESTION {currentIndex + 1}</Text>
+                    <View style={styles?.solutionCard}>
+                        <View style={styles?.questionHeader}>
+                            <View style={styles?.questionNumberBadge}>
+                                <Text style={styles?.questionNumberText}>QUESTION {currentIndex + 1}</Text>
                             </View>
                         </View>
 
@@ -157,7 +158,7 @@ const Solution = ({ route }: { route: { params: { testId: string } } }) => {
 
                         {/* Options */}
                         <View style={styles.optionsContainer}>
-                            {question?.options?.map((option) => (
+                            {/* {question?.options?.map((option) => (
                                 <View
                                     key={option.id}
                                     style={[
@@ -182,7 +183,63 @@ const Solution = ({ route }: { route: { params: { testId: string } } }) => {
                                         <Text style={styles.checkIcon}>✓</Text>
                                     )}
                                 </View>
-                            ))}
+                            ))} */}
+
+                            {question?.options?.map((option) => {
+                                const userAnswer = answers[question.id];
+
+                                const isCorrect = question.correctAnswer === option.id;
+                                const isUserSelected = userAnswer === option.id;
+
+                                return (
+                                    <View
+                                        key={option.id}
+                                        style={[
+                                            styles.optionItem,
+
+                                            // ✅ Correct answer → GREEN
+                                            isCorrect && styles.correctOptionItem,
+
+                                            // ❌ Wrong selected → RED
+                                            isUserSelected && !isCorrect && styles.wrongOptionItem,
+                                        ]}
+                                    >
+                                        <View
+                                            style={[
+                                                styles.optionLetterBox,
+
+                                                isCorrect && styles.correctOptionLetterBox,
+                                                isUserSelected && !isCorrect && styles.wrongOptionLetterBox,
+                                            ]}
+                                        >
+                                            <Text
+                                                style={[
+                                                    styles.optionLetterText,
+                                                    isCorrect && styles.correctOptionLetterText,
+                                                    isUserSelected && !isCorrect && styles.wrongOptionLetterText,
+                                                ]}
+                                            >
+                                                {option.id}
+                                            </Text>
+                                        </View>
+
+                                        <Text
+                                            style={[
+                                                styles.optionText,
+                                                isCorrect && styles.correctOptionText,
+                                                isUserSelected && !isCorrect && styles.wrongOptionText,
+                                            ]}
+                                        >
+                                            {option.text}
+                                        </Text>
+                                        {isCorrect && <Text style={styles.checkIcon}>✓</Text>}
+
+                                        {isUserSelected && !isCorrect && (
+                                            <Text style={{ color: 'red', marginLeft: 10 }}>✗</Text>
+                                        )}
+                                    </View>
+                                );
+                            })}
                         </View>
 
                         {/* Solution Section */}
@@ -192,7 +249,7 @@ const Solution = ({ route }: { route: { params: { testId: string } } }) => {
                                 <Text style={styles.solutionIcon}>💡</Text>
                                 <Text style={styles.solutionTitle}>Step-by-Step Solution</Text>
                             </View>
-                            <Text style={styles.solutionBody}>{question.solution}</Text>
+                            <Text style={styles.solutionBody}>{question?.solution}</Text>
                         </View>
                     </View>
                 </ScrollView>
@@ -208,11 +265,11 @@ const Solution = ({ route }: { route: { params: { testId: string } } }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.navButton, styles.nextButton, currentIndex === questionData.length - 1 && styles.finishButton]}
-                        onPress={currentIndex === questionData.length - 1 ? () => navigation?.navigate('Dashboard', { boardId: null, classId: null }) : handleNext}
+                        style={[styles.navButton, styles.nextButton, currentIndex === questionsData?.length - 1 && styles.finishButton]}
+                        onPress={currentIndex === questionsData?.length - 1 ? () => navigation?.navigate('Dashboard') : handleNext}
                     >
                         <Text style={styles.navButtonText}>
-                            {currentIndex === questionData.length - 1 ? 'Finish Review' : 'Next Solution'}
+                            {currentIndex === questionsData?.length - 1 ? 'Finish Review' : 'Next Solution'}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -478,6 +535,23 @@ const styles = StyleSheet.create({
     },
     activePlateText: {
         color: '#FFFFFF',
+    },
+    wrongOptionItem: {
+        backgroundColor: '#FFE5E5',
+        borderColor: '#FF4D4D',
+    },
+
+    wrongOptionLetterBox: {
+        backgroundColor: '#FF4D4D',
+    },
+
+    wrongOptionLetterText: {
+        color: '#FFF',
+    },
+
+    wrongOptionText: {
+        color: '#B00020',
+        fontFamily: fonts.LexendBold,
     },
 
 });

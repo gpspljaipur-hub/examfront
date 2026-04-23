@@ -21,6 +21,8 @@ import BottomTab from '../comman/BottomTab';
 import Header from '../comman/Header';
 import { Post_Api } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
+import { RootState } from '../store/store';
+import { useSelector } from 'react-redux';
 
 
 const { width } = Dimensions.get('window');
@@ -29,11 +31,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Dashboard'>;
 
 const Dashboard = ({ navigation, route }: Props) => {
     const { labels } = useLanguage();
-    const boardId = route.params?.boardId;
-    const classId = route.params?.classId;
     const [subjects, setSubjects] = React.useState<any[]>([]);
-
-    console.log(boardId, classId, "boardId, classIdboardId, classId");
+    const profile = useSelector((state: RootState) => state.profile);
 
     const getIcon = (name: any) => {
         const n = name.toLowerCase();
@@ -56,7 +55,7 @@ const Dashboard = ({ navigation, route }: Props) => {
         try {
             const res = await Post_Api(ApiUrl.GET_SUBJECT, {
                 // boardId: boardId,
-                classId: classId,
+                classId: profile.classId,
             });
 
             const apiData = res?.data || [];
@@ -78,35 +77,7 @@ const Dashboard = ({ navigation, route }: Props) => {
     };
     useEffect(() => {
         getSubjects()
-    }, [boardId, classId])
-
-
-    // const subjects = [
-    //     {
-    //         id: '1',
-    //         title: 'Mathematics',
-    //         subtitle: 'Class 9 • CBSE',
-    //         icon: '📐',
-    //         progress: 0.75,
-    //         color: '#E0F2F1',
-    //     },
-    //     {
-    //         id: '2',
-    //         title: 'Science',
-    //         subtitle: 'Class 9 • CBSE',
-    //         icon: '🧬',
-    //         progress: 0.45,
-    //         color: '#E8EAF6',
-    //     },
-    //     {
-    //         id: '3',
-    //         title: 'English',
-    //         subtitle: 'Class 9 • CBSE',
-    //         icon: '📖',
-    //         progress: 1.00,
-    //         color: '#E8EAF6',
-    //     },
-    // ];
+    }, [profile?.boardId, profile?.classId])
 
     const recommended = [
         {
@@ -198,7 +169,7 @@ const Dashboard = ({ navigation, route }: Props) => {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
                     {subjects.map((subject) => (
                         <TouchableOpacity key={subject.id} style={styles.subjectCard}
-                            onPress={() => navigation.navigate('SyllabusList', { subjectId: subject.id, boardId, classId })}
+                            onPress={() => navigation.navigate('SyllabusList', { subjectId: subject.id, boardId: profile?.boardId, classId: profile?.classId, subjectName: subject.title })}
                         >
                             <View style={[styles.subjectIconContainer, { backgroundColor: subject.color }]}>
                                 <Text style={styles.subjectIcon}>{subject.icon}</Text>

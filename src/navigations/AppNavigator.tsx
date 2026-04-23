@@ -23,12 +23,13 @@ export type RootStackParamList = {
     SelectLanguage: undefined;
     SelectClass: { boardId: string };
     SelectBoard: undefined;
-    Dashboard: { boardId: any, classId: any };
+    // Dashboard: { boardId: any, classId: any };
+    Dashboard: undefined;
     ProgressScreen: undefined;
     AiTutor: undefined;
     Profile: undefined;
     Question: { chapterId: string; chapterTitle: string, subjectId: any, boardId: any, classId: any };
-    SyllabusList: { subjectId?: any, boardId: any, classId: any };
+    SyllabusList: { subjectId?: any, boardId: any, classId: any, subjectName?: string };
     Result: {
         chapterId: string,
         chapterTitle: string,
