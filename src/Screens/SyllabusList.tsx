@@ -20,7 +20,7 @@ import ApiUrl from '../userApi/ApiUrl';
 type Props = NativeStackScreenProps<RootStackParamList, 'SyllabusList'>;
 
 const SyllabusList = ({ navigation, route }: Props) => {
-    const { subjectName, subjectId, boardId, classId } = route.params || {};
+    const { subjectName, subjectId, boardId, classId, nextScreen } = route.params || {};
     const [syllabusData, setSyllabusData] = useState<any[]>([]);
     const getChapters = async () => {
         try {
@@ -54,11 +54,11 @@ const SyllabusList = ({ navigation, route }: Props) => {
     }, [subjectId, boardId])
 
 
-
+    
     const renderChapter = ({ item }: { item: any }) => (
         <TouchableOpacity
             style={styles.chapterCard}
-            onPress={() => navigation.navigate('Question', {
+            onPress={() => navigation.navigate((nextScreen as any) || 'Question', {
                 chapterId: item.id,
                 chapterTitle: item.title,
                 subjectId: subjectId,
