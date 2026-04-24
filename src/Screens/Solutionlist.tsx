@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useEffect } from 'react'
 import ScreenWrapper from '../comman/ScreenWrapper'
 import Header from '../comman/Header'
@@ -17,6 +17,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Solutionlist'>;
 const Solutionlist = ({ navigation, route }: Props) => {
     const { labels } = useLanguage();
     const [subjects, setSubjects] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(false);
+
     const profile = useSelector((state: RootState) => state.profile);
 
     const getIcon = (name: any) => {
@@ -37,6 +39,7 @@ const Solutionlist = ({ navigation, route }: Props) => {
     };
 
     const getSubjects = async () => {
+        setLoading(true)
         try {
             const res = await Post_Api(ApiUrl.GET_SUBJECT, {
                 // boardId: boardId,
@@ -59,10 +62,34 @@ const Solutionlist = ({ navigation, route }: Props) => {
         } catch (error) {
             console.log(error);
         }
+        finally {
+            setLoading(false)
+        }
     };
     useEffect(() => {
         getSubjects()
     }, [profile?.classId])
+    if (loading) {
+        return (
+            <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#F7F8FF'
+            }}>
+                <ActivityIndicator size="large" color="#5c52cb" />
+
+                <Text style={{
+                    marginTop: 15,
+                    fontSize: 16,
+                    color: '#5c52cb',
+                    fontWeight: '600'
+                }}>
+                    📚 Loading your subjects...
+                </Text>
+            </View>
+        );
+    }
     return (
         <ScreenWrapper>
             <Header />

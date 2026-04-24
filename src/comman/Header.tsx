@@ -17,9 +17,13 @@ const Header = () => {
         <View style={styles.header}>
             <View style={styles.userInfo}>
                 <TouchableOpacity style={styles.avatarContainer} onPress={() => navigation.navigate('Profile')}>
-                    <Image
+                    {/* <Image
                         // source={require('../assets/images/')}
                         source={Images.aiTutor}
+                        style={styles.avatarImage}
+                    /> */}
+                    <Image
+                        source={{ uri: 'https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg' }}
                         style={styles.avatarImage}
                     />
                 </TouchableOpacity>
