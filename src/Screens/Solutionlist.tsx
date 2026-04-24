@@ -68,9 +68,9 @@ const Solutionlist = ({ navigation, route }: Props) => {
             <Header />
             <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>{labels.YourSubjects}</Text>
-                <TouchableOpacity>
+                {/* <TouchableOpacity>
                     <Text style={styles.viewAllText}>{labels.ViewAll}</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.verticalScroll}>
@@ -93,7 +93,7 @@ const Solutionlist = ({ navigation, route }: Props) => {
                     </TouchableOpacity>
                 ))}
             </ScrollView>
-            <BottomTab />
+            <BottomTab activeTab="Study" />
         </ScreenWrapper>
     )
 }

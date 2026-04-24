@@ -165,9 +165,9 @@ const Dashboard = ({ navigation, route }: Props) => {
                 {/* Your Subjects */}
                 <View style={styles.sectionHeader}>
                     <Text style={styles.sectionTitle}>{labels.YourSubjects}</Text>
-                    <TouchableOpacity>
+                    {/* <TouchableOpacity>
                         <Text style={styles.viewAllText}>{labels.ViewAll}</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
 
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
