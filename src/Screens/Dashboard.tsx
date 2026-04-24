@@ -8,6 +8,7 @@ import {
     Image,
     ScrollView,
     Dimensions,
+    ActivityIndicator
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
@@ -34,6 +35,7 @@ const Dashboard = ({ navigation, route }: Props) => {
     const { labels } = useLanguage();
     const [subjects, setSubjects] = React.useState<any[]>([]);
     const profile = useSelector((state: RootState) => state.profile);
+    const [loading, setLoading] = React.useState(true);
     console.log(profile, "profileprofileprofileprofileprofile");
 
 
@@ -55,6 +57,7 @@ const Dashboard = ({ navigation, route }: Props) => {
     };
 
     const getSubjects = async () => {
+        setLoading(true)
         try {
             const res = await Post_Api(ApiUrl.GET_SUBJECT, {
                 // boardId: boardId,
@@ -76,6 +79,9 @@ const Dashboard = ({ navigation, route }: Props) => {
 
         } catch (error) {
             console.log(error);
+        }
+        finally {
+            setLoading(false)
         }
     };
     useEffect(() => {
@@ -171,20 +177,59 @@ const Dashboard = ({ navigation, route }: Props) => {
                 </View>
 
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScroll}>
-                    {subjects.map((subject) => (
-                        <TouchableOpacity key={subject.id} style={styles.subjectCard}
-                            onPress={() => navigation.navigate('SyllabusList', { subjectId: subject.id, boardId: profile?.boardId, classId: profile?.classId, subjectName: subject.title, nextScreen: 'Question' })}
-                        >
-                            <View style={[styles.subjectIconContainer, { backgroundColor: subject.color }]}>
-                                <Text style={styles.subjectIcon}>{subject.icon}</Text>
+                    {loading
+                        ? [1, 2, 3, 4].map((_, index) => (
+                            <View key={index} style={[styles.subjectCard, { opacity: 0.6 }]}>
+
+                                {/* Icon Skeleton */}
+                                <View style={{
+                                    width: 50,
+                                    height: 50,
+                                    borderRadius: 12,
+                                    backgroundColor: '#eee',
+                                    marginBottom: 10
+                                }} />
+
+                                {/* Title Skeleton */}
+                                <View style={{
+                                    height: 14,
+                                    width: '70%',
+                                    backgroundColor: '#eee',
+                                    borderRadius: 6,
+                                    marginBottom: 6
+                                }} />
+
+                                {/* Subtitle Skeleton */}
+                                <View style={{
+                                    height: 12,
+                                    width: '50%',
+                                    backgroundColor: '#eee',
+                                    borderRadius: 6,
+                                    marginBottom: 10
+                                }} />
+
+                                {/* Progress Skeleton */}
+                                <View style={{
+                                    height: 6,
+                                    width: '100%',
+                                    backgroundColor: '#eee',
+                                    borderRadius: 6
+                                }} />
+
                             </View>
-                            <Text style={styles.subjectTitle}>{subject.title}</Text>
-                            <Text style={styles.subjectSubtitle}>{subject.subtitle}</Text>
-                            <View style={styles.subjectProgressBar}>
-                                <View style={[styles.subjectProgressFill, { width: `${subject.progress * 100}%` }]} />
-                            </View>
-                        </TouchableOpacity>
-                    ))}
+                        ))
+                        : subjects.map((subject) => (
+                            <TouchableOpacity key={subject.id} style={styles.subjectCard} onPress={() => navigation.navigate('SyllabusList', { subjectId: subject.id, boardId: profile?.boardId, classId: profile?.classId, subjectName: subject.title, nextScreen: 'Question', })}>
+                                <View style={[styles.subjectIconContainer, { backgroundColor: subject.color }]}>
+                                    <Text style={styles.subjectIcon}>{subject.icon}</Text>
+                                </View>
+                                <Text style={styles.subjectTitle}>{subject.title}</Text>
+                                <Text style={styles.subjectSubtitle}>{subject.subtitle}</Text>
+                                <View style={styles.subjectProgressBar}>
+                                    <View style={[styles.subjectProgressFill, { width: `${subject.progress * 100}%` }]} />
+                                </View>
+                            </TouchableOpacity>
+                        ))}
                 </ScrollView>
 
                 {/* Recommended */}

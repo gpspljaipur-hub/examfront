@@ -7,6 +7,7 @@ import {
     StatusBar,
     ScrollView,
     FlatList,
+    ActivityIndicator,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
@@ -22,7 +23,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SyllabusList'>;
 const SyllabusList = ({ navigation, route }: Props) => {
     const { subjectName, subjectId, boardId, classId, nextScreen } = route.params || {};
     const [syllabusData, setSyllabusData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
     const getChapters = async () => {
+        setLoading(true)
         try {
             const res = await Post_Api(ApiUrl.GET_CHAPTER, {
                 subjectId: subjectId,
@@ -47,14 +50,37 @@ const SyllabusList = ({ navigation, route }: Props) => {
         } catch (error) {
             console.log(error);
         }
+        finally {
+            setLoading(false)
+        }
     };
 
     useEffect(() => {
         getChapters()
     }, [subjectId, boardId])
 
+    if (loading) {
+        return (
+            <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#F7F8FF'
+            }}>
+                <ActivityIndicator size="large" color="#5c52cb" />
 
-    
+                <Text style={{
+                    marginTop: 15,
+                    fontSize: 16,
+                    color: '#5c52cb',
+                    fontWeight: '600'
+                }}>
+                    📚 Loading chapters...
+                </Text>
+            </View>
+        );
+    }
+
     const renderChapter = ({ item }: { item: any }) => (
         <TouchableOpacity
             style={styles.chapterCard}

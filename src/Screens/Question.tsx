@@ -195,7 +195,7 @@ const Question = ({ navigation, route }: Props) => {
                     color: '#5c52cb',
                     fontWeight: '600'
                 }}>
-                    Loading Questions...
+                    🧠 Preparing your test...
                 </Text>
             </View>
         );

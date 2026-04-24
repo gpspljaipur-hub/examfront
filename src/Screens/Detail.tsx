@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ScreenWrapper from '../comman/ScreenWrapper'
 import Header from '../comman/Header'
@@ -14,7 +14,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'DetailPage'>;
 const Detail = ({ navigation, route }: Props) => {
     const { subjectId, boardId, classId, chapterId } = route.params;
     const { language } = useLanguage();
-
     const [data, setData] = useState<any>(null);
 
     const getData = async () => {
@@ -39,9 +38,26 @@ const Detail = ({ navigation, route }: Props) => {
     }, []);
 
     if (!data) {
-        return <Text style={{ marginTop: 50, textAlign: 'center' }}>Loading...</Text>
-    }
+        return (
+            <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#F7F8FF'
+            }}>
+                <ActivityIndicator size="large" color="#5c52cb" />
 
+                <Text style={{
+                    marginTop: 15,
+                    fontSize: 16,
+                    color: '#5c52cb',
+                    fontWeight: '600'
+                }}>
+                    Fetching chapter content...
+                </Text>
+            </View>
+        );
+    }
     return (
         <ScreenWrapper>
             <Header />
