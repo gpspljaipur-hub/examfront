@@ -19,6 +19,8 @@ import ScreenWrapper from '../comman/ScreenWrapper';
 import { useLanguage } from '../context/LanguageContext';
 import BottomTab from '../comman/BottomTab';
 import Header from '../comman/Header';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 const { width } = Dimensions.get('window');
 
@@ -28,6 +30,8 @@ const ProgressScreen = ({ navigation }: Props) => {
     const { labels } = useLanguage();
     const [selectedBadgeId, setSelectedBadgeId] = React.useState<string | null>(null);
     const [selectedUserRank, setSelectedUserRank] = React.useState<number | null>(null);
+    const profile = useSelector((state: RootState) => state.profile);
+
 
     const badges = [
         {
@@ -97,7 +101,7 @@ const ProgressScreen = ({ navigation }: Props) => {
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 {/* Greeting */}
                 <View style={styles.greetingSection}>
-                    <Text style={styles.greetingText}>{labels.GreatJob}, Aarav! 👋</Text>
+                    <Text style={styles.greetingText}>{labels.GreatJob}, {profile?.fullName || 'User'}! 👋</Text>
                     <Text style={styles.subGreetingText}>{labels.TopPercent}</Text>
                 </View>
 
