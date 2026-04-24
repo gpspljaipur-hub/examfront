@@ -221,9 +221,9 @@ const Question = ({ navigation, route }: Props) => {
                 <View style={styles.timerContainer}>
                     <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
                 </View>
-                <TouchableOpacity style={styles.settingsBtn}>
+                {/* <TouchableOpacity style={styles.settingsBtn}>
                     <Text style={styles.settingsIcon}>⚙️</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -383,7 +383,7 @@ const Question = ({ navigation, route }: Props) => {
                 </View>
 
                 {/* Bottom Options */}
-                <View style={styles.bottomLinkContainer}>
+                {/* <View style={styles.bottomLinkContainer}>
                     <TouchableOpacity>
                         <Text style={styles.bottomLink}>Help</Text>
                     </TouchableOpacity>
@@ -391,7 +391,7 @@ const Question = ({ navigation, route }: Props) => {
                     <TouchableOpacity>
                         <Text style={styles.bottomLink}>Formula Sheet</Text>
                     </TouchableOpacity>
-                </View>
+                </View> */}
 
                 <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                     <Text style={styles.submitButtonText}>Submit Test</Text>

@@ -117,7 +117,7 @@ const Result = () => {
             <Text style={styles.aiButtonTextPrimary}>💬 View Solution & Analysis</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.aiButtonSecondary}
             onPress={() => navigation.navigate('Question', {
               chapterId,
@@ -128,7 +128,7 @@ const Result = () => {
             })}
           >
             <Text style={styles.aiButtonTextSecondary}>Retake Test</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Footer Link */}

@@ -7,6 +7,8 @@ import {
     TouchableOpacity,
     FlatList,
     Image,
+    KeyboardAvoidingView,
+
 } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useSelector } from 'react-redux';
@@ -14,6 +16,9 @@ import { RootState } from '../store/store';
 import { Post_Api } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
 import Markdown from 'react-native-markdown-display';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigations/AppNavigator';
 
 interface Message {
     id: string;
@@ -22,6 +27,7 @@ interface Message {
 }
 
 const AiTutor = () => {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const [message, setMessage] = useState('');
     const [chat, setChat] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
@@ -93,7 +99,10 @@ const AiTutor = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={'height'}
+        >
 
             {/* Background */}
             <Image
@@ -103,6 +112,9 @@ const AiTutor = () => {
 
             {/* Header */}
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Text style={styles.backIcon}>←</Text>
+                </TouchableOpacity>
                 <Text style={styles.headerLeft}>Ask AI Tutor</Text>
                 <Text style={styles.headerRight}>EduAI</Text>
             </View>
@@ -147,7 +159,7 @@ const AiTutor = () => {
                 </TouchableOpacity>
 
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -169,13 +181,21 @@ const styles = StyleSheet.create({
 
     header: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        alignItems: 'center',
         padding: 16,
-        marginTop: 40,
+        marginTop: 30,
+    },
+    backButton: {
+        marginRight: 15,
+    },
+    backIcon: {
+        fontSize: 24,
+        color: '#4B3E90',
     },
     headerLeft: {
         fontSize: 18,
         fontWeight: '600',
+        flex: 1,
     },
     headerRight: {
         fontSize: 16,
