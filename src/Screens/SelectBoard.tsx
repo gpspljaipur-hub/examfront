@@ -24,6 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../store/slice/authSlice';
+import { Images } from '../assets/images/Images';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SelectBoard'>;
 
@@ -69,7 +70,8 @@ const SelectBoard = ({ navigation }: Props) => {
                 <Text style={styles.headerTitle}>{labels.HeaderTitle}</Text>
                 <View style={styles.avatarContainer}>
                     <Image
-                        source={require('../assets/images/ai_tutor_character.png')}
+                        // source={require('/src/assets/images/ai_tutor_character.png')}
+                        source={Images.aiTutor}
                         style={styles.avatarImage}
                     />
                 </View>
@@ -130,7 +132,8 @@ const SelectBoard = ({ navigation }: Props) => {
                 <View style={styles.notSureCard}>
                     <View style={styles.notSureContent}>
                         <Image
-                            source={require('../assets/images/ai_tutor_character.png')}
+                            // source={require('/src/assets/images/ai_tutor_character.png')}
+                            source={Images.aiTutor}
                             style={styles.notSureImage}
                         />
                         <View style={styles.notSureTextContainer}>

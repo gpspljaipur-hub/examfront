@@ -7,6 +7,7 @@ import FontsSize from './FontsSize';
 import MarginHW from './MarginHW';
 import fonts from './fonts';
 import { RootStackParamList } from '../navigations/AppNavigator';
+import { Images } from '../assets/images/Images';
 
 const Header = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -17,7 +18,8 @@ const Header = () => {
             <View style={styles.userInfo}>
                 <TouchableOpacity style={styles.avatarContainer} onPress={() => navigation.navigate('Profile')}>
                     <Image
-                        source={require('../assets/images/ai_tutor_character.png')}
+                        // source={require('../assets/images/')}
+                        source={Images.aiTutor}
                         style={styles.avatarImage}
                     />
                 </TouchableOpacity>

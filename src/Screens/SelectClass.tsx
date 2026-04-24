@@ -25,6 +25,7 @@ import { RootState } from '../store/store';
 import { setProfile } from '../store/slice/profileSlice';
 
 import { setUserData } from '../store/slice/authSlice';
+import { Images } from '../assets/images/Images';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SelectClass'>;
 
@@ -150,7 +151,8 @@ const SelectClass = ({ navigation, route }: Props) => {
 
                 <View style={styles.tutorContainer}>
                     <Image
-                        source={require('../assets/images/ai_tutor_character.png')}
+                        // source={require('/src/assets/images/ai_tutor_character.png')}
+                        source={Images.aiTutor}
                         style={styles.tutorImage}
                         resizeMode="contain"
                     />

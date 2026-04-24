@@ -23,6 +23,7 @@ import { Post_Api } from '../userApi/Request';
 import ApiUrl from '../userApi/ApiUrl';
 import { RootState } from '../store/store';
 import { useSelector } from 'react-redux';
+import { Images } from '../assets/images/Images';
 
 
 const { width } = Dimensions.get('window');
@@ -88,7 +89,7 @@ const Dashboard = ({ navigation, route }: Props) => {
             duration: '15 min',
             level: 'Beginner',
             category: 'MATH • ALGEBRA',
-            image: require('../assets/images/algebra_lesson.png'),
+            // image: require('../assets/images/algebra_lesson.png'),
         },
         {
             id: '2',
@@ -96,7 +97,7 @@ const Dashboard = ({ navigation, route }: Props) => {
             duration: '22 min',
             level: 'Intermediate',
             category: 'SCIENCE • PHYSICS',
-            image: require('../assets/images/physics_lesson.png'),
+            // image: require('../assets/images/physics_lesson.png'),
         },
     ];
 
@@ -113,7 +114,7 @@ const Dashboard = ({ navigation, route }: Props) => {
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 {/* Greeting */}
                 <View style={styles.greetingSection}>
-                    <Text style={styles.greetingText}>{labels.Hello}, Aarav!</Text>
+                    <Text style={styles.greetingText}>{labels.Hello}, {profile?.fullName || 'User'}!</Text>
                     <Text style={styles.subGreetingText}>{labels.LetsLearnSomethingNew}</Text>
                 </View>
 
@@ -155,7 +156,8 @@ const Dashboard = ({ navigation, route }: Props) => {
                         </TouchableOpacity>
                     </View>
                     <Image
-                        source={require('../assets/images/ai_tutor_character.png')}
+                        // source={require('src/assets/images/ai_tutor_character.png')}
+                        source={Images.aiTutor}
                         style={styles.aiTutorCharacter}
                     />
                 </TouchableOpacity>
@@ -192,7 +194,7 @@ const Dashboard = ({ navigation, route }: Props) => {
 
                 {recommended.map((item) => (
                     <TouchableOpacity key={item.id} style={styles.recommendedCard}>
-                        <Image source={item.image} style={styles.recommendedImage} />
+                        {/* <Image source={item.image} style={styles.recommendedImage} /> */}
                         <View style={styles.recommendedInfo}>
                             <Text style={styles.recommendedCategory}>{item.category}</Text>
                             <Text style={styles.recommendedTitle}>{item.title}</Text>
